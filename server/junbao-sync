@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Runs from cron. Pulls the latest site from GitHub and copies it into the folder nginx serves junbao.ai from.
+set -euo pipefail
+REPO=/opt/junbao-site
+CONF=/etc/junbao-sync.conf
+ROOT=$(cat "$CONF")
+cd "$REPO"
+git fetch -q origin main
+if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] && [ "${1:-}" != "--force" ]; then exit 0; fi
+git reset -q --hard origin/main
+cp -a "$REPO/site/." "$ROOT/"
+chown -R www-data:www-data "$ROOT" 2>/dev/null || true
+echo "$(date '+%F %T') deployed $(git rev-parse --short HEAD)" >> /var/log/junbao-sync.log

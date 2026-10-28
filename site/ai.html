@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>钧宝 AI · JUNBAO AI</title>
+<meta name="description" content="钧宝的 AI 影像作品、自研 AI 工具、创作方法与 AI 视频课程。">
+<meta name="theme-color" content="#0B0B0D">
+<link rel="icon" type="image/png" href="img/junbao-symbol-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700;6..96,900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+/* Layout: the same screening room as the home page, lit by the cyan monitor of the AI track. Sections follow how a piece is made: works, lab, tools, method, teaching. */
+:root{
+  color-scheme: dark;
+  --bg:#0B0B0D;--bg-2:#141417;--bg-3:#1C1C20;
+  --line:rgba(241,236,227,.12);--line-2:rgba(241,236,227,.24);
+  --fg:#F1ECE3;--fg-2:#CFC9BE;--mute:#A49E93;
+  --film:#E3A04A;--ai:#7CC8D8;--ai-deep:#0F2A30;--on-accent:#0B0B0D;
+  --display:"Bodoni Moda","Noto Serif SC","Songti SC",serif;
+  --body:"IBM Plex Sans","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono","Noto Sans SC",ui-monospace,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+a{color:inherit;text-decoration:none}
+img,video{max-width:100%;display:block}
+button{font:inherit;color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--ai);outline-offset:3px;border-radius:4px}
+:root:not(.l-en) .en{display:none!important}
+:root.l-en .zh{display:none!important}
+.zh{word-break:keep-all;overflow-wrap:break-word}
+h1,h2,h3,h4{margin:0;font-weight:900;word-break:keep-all;text-wrap:balance;letter-spacing:.01em}
+.ln{display:block;white-space:nowrap}
+.nw{white-space:nowrap}
+p{margin:0;line-break:strict;text-wrap:pretty}
+.wrap{max-width:1320px;margin-inline:auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:10px}
+.t-ai{color:var(--ai)}.t-film{color:var(--film)}
+#grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70;opacity:.07;mix-blend-mode:overlay;image-rendering:pixelated}
+
+/* header (shared with home) */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(11,11,13,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.logo img{height:22px;width:auto}
+.nav{display:flex;align-items:center;gap:clamp(12px,2.2vw,28px);font-size:15px}
+.nav a{color:var(--fg-2);transition:color .2s;white-space:nowrap}
+.nav a:hover,.nav a[aria-current="page"]{color:var(--fg)}
+.nav a[aria-current="page"]{position:relative}
+.nav a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--ai);border-radius:2px}
+.nav .wb{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--ai);color:var(--ai)}
+.nav .wb:hover{background:var(--ai);color:var(--on-accent)}
+.nav .wb i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.lang{display:flex;border:1px solid var(--line-2);border-radius:999px;padding:3px}
+.lang button{background:none;border:0;padding:6px 11px;min-height:34px;border-radius:999px;font-family:var(--mono);font-size:12px;color:var(--mute);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--fg);color:var(--on-accent)}
+@media (max-width:820px){.nav .opt{display:none}}
+.nav .wb .wb-s{display:none}
+@media (max-width:480px){.nav .wb .wb-l{display:none}.nav .wb .wb-s{display:inline}.nav .wb{padding:0 12px}}
+
+/* hero */
+.hero{position:relative;overflow:hidden;min-height:clamp(560px,78vh,820px);display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+.hero video,.hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(11,11,13,.97) 10%,rgba(11,11,13,.55) 48%,rgba(11,11,13,.25)),linear-gradient(90deg,rgba(11,11,13,.75),transparent 70%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(124,200,216,.05) 0 1px,transparent 1px 4px);mix-blend-mode:screen}
+.hero .wrap{position:relative;z-index:2;width:100%;padding-block:clamp(48px,8vw,96px)}
+.hud{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ai)}
+.hud .rec{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ai);margin-right:8px;animation:blink 1.4s steps(2,start) infinite}
+@keyframes blink{to{opacity:.15}}
+.h-hero{font-family:var(--display);font-size:clamp(42px,7vw,104px);line-height:1.05;margin-top:20px}
+.h-hero .ai-word{color:var(--ai)}
+.lede{margin-top:22px;font-size:clamp(16px,1.5vw,19px);color:var(--fg-2);max-width:620px}
+.sub{position:sticky;top:calc(env(safe-area-inset-top,0px) + 63px);z-index:40;background:rgba(11,11,13,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.sub .wrap{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-block:10px}
+.sub .wrap::-webkit-scrollbar{display:none}
+.sub a{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;font-size:14px;color:var(--fg-2);border:1px solid transparent;white-space:nowrap}
+.sub a b{font-family:var(--mono);font-weight:500;font-size:11px;color:var(--mute)}
+.sub a.on{border-color:var(--ai);color:var(--fg)}
+.sub a.on b{color:var(--ai)}
+
+/* sections */
+.sec{padding-block:clamp(72px,9vw,130px);scroll-margin-top:120px}
+.sec+.sec{border-top:1px solid var(--line)}
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 40px;margin-bottom:clamp(32px,4.5vw,56px)}
+.h2{font-family:var(--display);font-size:clamp(32px,4.6vw,64px);line-height:1.15;margin-top:14px}
+.sec-head>p{max-width:460px;color:var(--fg-2);text-wrap:balance}
+
+/* works */
+.works{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:clamp(16px,2.4vw,28px);align-items:start}
+.player{position:relative;border-radius:14px;overflow:hidden;background:#000;border:1px solid var(--line)}
+.player video{width:100%;height:100%;object-fit:cover}
+.player.wide{aspect-ratio:2206/946}
+.player.tall{aspect-ratio:9/16;border-radius:28px;border:6px solid var(--bg-3);box-shadow:0 0 0 1px var(--line-2)}
+.play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(0deg,rgba(0,0,0,.45),rgba(0,0,0,.05));border:0;cursor:pointer}
+.play .pill{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 22px;border-radius:999px;background:rgba(241,236,227,.94);color:var(--on-accent);font-weight:600;font-size:15px;transition:transform .3s var(--ease)}
+.play:hover .pill{transform:scale(1.05)}
+.player.on .play{display:none}
+.wcap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;margin-top:14px}
+.wcap b{font-size:17px;font-weight:600}
+.wcap span{font-size:14px;color:var(--mute)}
+.credits-line{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--mute);letter-spacing:.04em}
+.channel{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 28px;margin-top:clamp(28px,4vw,44px);padding:clamp(20px,3vw,30px);border-radius:16px;border:1px solid var(--line);background:var(--bg-2)}
+.channel h3{font-size:clamp(20px,2.2vw,26px);font-weight:700;margin-top:8px}
+.channel p{margin-top:6px;color:var(--fg-2);font-size:15px;max-width:620px}
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;border-radius:999px;border:1px solid var(--line-2);font-weight:500;font-size:15px;white-space:nowrap;transition:background .25s,color .25s,border-color .25s}
+.btn:hover{border-color:var(--fg)}
+.btn.ai{background:var(--ai);border-color:var(--ai);color:var(--on-accent);font-weight:600}
+.btn.ai:hover{background:#9BD8E5}
+@media (max-width:860px){.works{grid-template-columns:minmax(0,1fr)}.works .tallbox{order:-1;max-width:340px;width:100%;margin-inline:auto}}
+
+/* lab: before / after */
+.lab{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:12px}
+.ba{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#000;touch-action:pan-y}
+.ba.portrait{aspect-ratio:3/4}
+.ba.land{aspect-ratio:16/9}
+.ba video,.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ba .before{clip-path:inset(0 calc(100% - var(--pos,50%)) 0 0)}
+.ba .bar{position:absolute;top:0;bottom:0;left:var(--pos,50%);width:2px;margin-left:-1px;background:var(--fg);pointer-events:none}
+.ba .knob{position:absolute;top:50%;left:var(--pos,50%);width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:var(--fg);color:var(--on-accent);display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
+.ba .tag{position:absolute;top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;padding:5px 10px;border-radius:999px;background:rgba(11,11,13,.72);pointer-events:none}
+.ba .tag.l{left:12px;color:var(--fg-2)}
+.ba .tag.r{right:12px;color:var(--ai)}
+.lab-cap{margin-top:12px;font-size:14px;color:var(--fg-2)}
+.lab-cap code{font-family:var(--mono);font-size:12px;color:var(--ai)}
+.lab-note{margin-top:clamp(24px,3vw,36px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lab-note div{padding:18px 20px;border-radius:12px;border:1px solid var(--line);background:var(--bg-2)}
+.lab-note b{display:block;font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.12em;color:var(--ai)}
+.lab-note span{display:block;margin-top:6px;font-size:14px;color:var(--fg-2);line-height:1.65}
+@media (max-width:860px){.lab{grid-template-columns:minmax(0,1fr)}.lab-note{grid-template-columns:minmax(0,1fr)}}
+
+/* tools */
+.feature-tool{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center;padding:clamp(24px,4vw,48px);border-radius:20px;border:1px solid rgba(124,200,216,.45);background:radial-gradient(90% 120% at 100% 0%,rgba(124,200,216,.16),transparent 60%),var(--bg-2)}
+.feature-tool .url{font-family:var(--mono);font-size:13px;color:var(--ai);display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ai);flex:none;animation:ping 2.4s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(124,200,216,.55)}70%,100%{box-shadow:0 0 0 9px rgba(124,200,216,0)}}
+.feature-tool h3{font-family:var(--display);font-size:clamp(30px,3.8vw,52px);line-height:1.15;margin-top:14px}
+.feature-tool p{margin-top:14px;color:var(--fg-2);max-width:520px}
+.feature-tool ul{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.feature-tool li{font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);white-space:nowrap}
+.feature-tool .btn{margin-top:26px}
+.mock{border-radius:14px;border:1px solid var(--line-2);background:#0E1214;overflow:hidden;font-family:var(--mono);font-size:13px;line-height:1.8}
+.mock-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--mute);font-size:12px}
+.mock-bar i{width:9px;height:9px;border-radius:50%;background:var(--bg-3);border:1px solid var(--line-2)}
+.mock-bar span{margin-left:8px}
+.mock-body{padding:16px 18px;display:grid;gap:12px}
+.mock-row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px}
+.mock-row .k{color:var(--mute)}
+.mock-row .v{color:var(--fg)}
+.mock-out{margin-top:4px;padding:12px 14px;border-radius:10px;background:rgba(124,200,216,.08);border:1px solid rgba(124,200,216,.3);color:var(--ai);white-space:pre-wrap;overflow-wrap:anywhere}
+.mock-out .caret{display:inline-block;width:.55em;height:1em;vertical-align:-.12em;background:var(--ai);animation:blink 1s steps(2,start) infinite}
+.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.tool{display:flex;flex-direction:column;gap:8px;padding:22px;border-radius:14px;background:var(--bg-2);border:1px solid var(--line);transition:border-color .3s,transform .4s var(--ease)}
+a.tool:hover{border-color:var(--ai);transform:translateY(-3px)}
+.tool .url{font-family:var(--mono);font-size:12px;color:var(--ai)}
+.tool h4{font-size:19px;font-weight:700}
+.tool p{font-size:14px;color:var(--fg-2);line-height:1.65}
+@media (max-width:860px){.feature-tool{grid-template-columns:minmax(0,1fr)}.tools{grid-template-columns:minmax(0,1fr)}}
+
+/* method */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;counter-reset:s}
+.steps li{background:var(--bg);padding:26px 24px 28px;display:flex;flex-direction:column;gap:10px;counter-increment:s;transition:background .3s}
+.steps li:hover{background:var(--bg-2)}
+.steps li::before{content:"0" counter(s);font-family:var(--mono);font-size:13px;color:var(--ai);letter-spacing:.1em}
+.steps h4{font-size:21px;font-weight:700}
+.steps p{font-size:14px;color:var(--fg-2);line-height:1.7}
+.steps .use{margin-top:auto;padding-top:6px;font-family:var(--mono);font-size:12px;color:var(--mute)}
+.steps .use a{color:var(--ai);border-bottom:1px solid rgba(124,200,216,.4)}
+.stack{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:22px;font-size:14px;color:var(--mute)}
+.stack span.chip{font-family:var(--mono);font-size:12px;letter-spacing:.06em;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);color:var(--fg-2)}
+@media (max-width:900px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.steps{grid-template-columns:minmax(0,1fr)}}
+
+/* teaching */
+.courses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.course{display:flex;flex-direction:column;gap:12px;padding:clamp(22px,2.6vw,30px);border-radius:16px;border:1px solid var(--line);background:var(--bg-2)}
+.course .who{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ai)}
+.course h3{font-size:clamp(22px,2.2vw,27px);font-weight:700;line-height:1.3}
+.course p{font-size:15px;color:var(--fg-2)}
+.course ul{margin:4px 0 0;padding-left:1.1em;font-size:14px;color:var(--fg-2);display:grid;gap:4px}
+.course.hl{border-color:rgba(124,200,216,.5);background:linear-gradient(160deg,rgba(124,200,216,.1),transparent 60%),var(--bg-2)}
+@media (max-width:900px){.courses{grid-template-columns:minmax(0,1fr)}}
+
+/* contact */
+.cta{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,4vw,56px);align-items:center;padding:clamp(26px,4vw,52px);border-radius:20px;border:1px solid var(--line);background:radial-gradient(80% 120% at 0% 100%,rgba(124,200,216,.12),transparent 60%),var(--bg-2)}
+.cta h2{font-family:var(--display);font-size:clamp(32px,4.4vw,60px);line-height:1.15}
+.cta p{margin-top:14px;color:var(--fg-2)}
+.ways{display:grid;gap:10px}
+.way{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 14px 14px 20px;border-radius:14px;background:var(--bg);border:1px solid var(--line-2)}
+.way small{display:block;font-size:12px;color:var(--mute)}
+.way b{display:block;font-family:var(--mono);font-size:clamp(15px,1.7vw,18px);font-weight:500;user-select:all;overflow-wrap:anywhere}
+.copy{flex:none;min-height:44px;min-width:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line-2);background:transparent;cursor:pointer;font-size:13px;color:var(--fg-2)}
+.copy:hover{border-color:var(--fg);color:var(--fg)}
+@media (max-width:860px){.cta{grid-template-columns:minmax(0,1fr)}}
+
+footer{border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding-block:28px;font-size:13px;color:var(--mute)}
+footer .f-l{display:flex;align-items:center;gap:12px}
+footer img{width:20px;height:20px}
+footer a:hover{color:var(--fg)}
+
+/* motion */
+.split .ch{display:inline-block;white-space:pre}
+.split.anim .ch{animation:chIn .9s var(--ease) both;animation-delay:calc(var(--i)*38ms + var(--d,0ms))}
+@keyframes chIn{from{opacity:0;transform:translateY(.35em);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.rise{transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rise.wait{opacity:0;transform:translateY(28px)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rise.wait{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<canvas id="grain" aria-hidden="true"></canvas>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="钧宝 JUNBAO 首页"><img src="img/junbao-lockup-white.png" alt="JUNBAO" width="120" height="26"></a>
+    <nav class="nav" aria-label="主导航">
+      <a href="index.html#film"><span class="zh">电影</span><span class="en">Film</span></a>
+      <a href="ai.html" aria-current="page">AI</a>
+      <a class="opt" href="index.html#about"><span class="zh">关于</span><span class="en">About</span></a>
+      <a class="opt" href="#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+      <a class="wb" href="https://prompt.junbao.ai" target="_blank" rel="noopener" aria-label="提示词工作台 prompt.junbao.ai"><i aria-hidden="true"></i><span class="wb-l"><span class="zh">提示词工作台</span><span class="en">Prompt Studio</span></span><span class="wb-s"><span class="zh">工作台</span><span class="en">Studio</span></span> ↗</a>
+      <div class="lang" role="group" aria-label="语言 Language">
+        <button type="button" id="btn-zh" aria-pressed="true">中</button>
+        <button type="button" id="btn-en" aria-pressed="false">EN</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero" aria-labelledby="h1">
+  <video class="bgv" autoplay muted loop playsinline preload="auto" poster="media/oct7-loop.jpg" aria-hidden="true"><source src="media/oct7-loop.mp4" type="video/mp4"></video>
+  <div class="wrap">
+    <div class="hud"><span><span class="rec" aria-hidden="true"></span>TRACK B · AI</span><span>JUNBAO AI LAB</span><span id="clock">00:00:00:00</span></div>
+    <h1 class="h-hero" id="h1">
+      <span class="zh"><span class="ln split" data-d="80">用电影的标准，</span><span class="ln split" data-d="380">做 <span class="ai-word">AI</span> 影像。</span></span>
+      <span class="en"><span class="ln split" data-d="80"><span class="ai-word">AI</span> imagery,</span><span class="ln split" data-d="380">made to film standards.</span></span>
+    </h1>
+    <p class="lede"><span class="zh">我把电影工业的流程搬进 AI：先写剧本、画分镜、定角色，再交给模型出镜头。这一页是我的 AI 作品、自研工具、创作方法和课程。</span><span class="en">I bring the film-industry pipeline to AI: script, storyboard and character design first, then the model makes the shots. This page holds my AI films, the tools I build, my method and my courses.</span></p>
+  </div>
+</section>
+
+<nav class="sub" aria-label="本页目录">
+  <div class="wrap" id="subnav">
+    <a href="#works"><b>01</b><span class="zh">作品</span><span class="en">Works</span></a>
+    <a href="#lab"><b>02</b><span class="zh">实验</span><span class="en">Lab</span></a>
+    <a href="#tools"><b>03</b><span class="zh">工具</span><span class="en">Tools</span></a>
+    <a href="#method"><b>04</b><span class="zh">方法</span><span class="en">Method</span></a>
+    <a href="#teach"><b>05</b><span class="zh">课程</span><span class="en">Courses</span></a>
+  </div>
+</nav>
+
+<!-- 01 WORKS -->
+<section class="sec" id="works" aria-labelledby="works-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow t-ai">01 · WORKS</div>
+        <h2 class="h2" id="works-h"><span class="zh"><span class="ln split">AI 短片作品</span></span><span class="en"><span class="ln split">AI films</span></span></h2>
+      </div>
+      <p class="rise"><span class="zh">编剧、导演、出镜都是我自己。横屏讲故事，竖屏做传播。</span><span class="en">I write, direct and appear in them myself. Widescreen for story, vertical for reach.</span></p>
+    </div>
+    <div class="works">
+      <div>
+        <div class="player wide" data-src="media/oct7.mp4">
+          <video preload="none" playsinline poster="media/oct7-poster.jpg" aria-label="AI 短片《10月7日》"></video>
+          <button class="play" type="button"><span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span class="zh">播放 · 1′35″</span><span class="en">Play · 1′35″</span></span></button>
+        </div>
+        <div class="wcap"><b><span class="zh">《10月7日》</span><span class="en">October 7</span></b><span class="zh">为北京世青国际学校 AI 课程创作 · 本人主演</span><span class="en">Made for the BWYA AI class · starring myself</span></div>
+      </div>
+      <div class="tallbox">
+        <div class="player tall" data-src="media/demo2.mp4">
+          <video preload="none" playsinline poster="media/demo2-poster.jpg" aria-label="竖屏 AI 短片"></video>
+          <button class="play" type="button"><span class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span class="zh">播放 · 29″</span><span class="en">Play · 29″</span></span></button>
+        </div>
+        <div class="wcap"><b><span class="zh">竖屏 AI 短片</span><span class="en">Vertical AI short</span></b><span class="zh">AI 分身出镜 · 动态字幕</span><span class="en">AI double · kinetic captions</span></div>
+      </div>
+    </div>
+    <div class="channel rise">
+      <div>
+        <div class="eyebrow">YOUTUBE · @PlainlyCuriousLab</div>
+        <h3>PlainlyCuriousLab</h3>
+        <p><span class="zh">我定选题，脚本、画面、配音走 AI 工作流的长视频知识频道。</span><span class="en">A long-form explainer channel: I pick the topics, and script, visuals and voice run through an AI workflow.</span></p>
+      </div>
+      <a class="btn" href="https://www.youtube.com/@PlainlyCuriousLab" target="_blank" rel="noopener"><span class="zh">去频道看看 ↗</span><span class="en">Visit channel ↗</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 02 LAB -->
+<section class="sec" id="lab" aria-labelledby="lab-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow t-ai">02 · LAB</div>
+        <h2 class="h2" id="lab-h"><span class="zh"><span class="ln split">从一张照片，</span><span class="ln split">到一个镜头。</span></span><span class="en"><span class="ln split">From one photo</span><span class="ln split">to one shot.</span></span></h2>
+      </div>
+      <p class="rise"><span class="zh">拖动中间的滑块，对比原图和 AI 生成的动态镜头。这个网站上会动的画面，都是这样做出来的。</span><span class="en">Drag the slider to compare the original photo with the AI-generated shot. Every moving image on this site was made this way.</span></p>
+    </div>
+    <div class="lab">
+      <figure style="margin:0">
+        <div class="ba portrait" data-ba>
+          <video class="bgv" autoplay muted loop playsinline preload="metadata" poster="img/hero.jpg" aria-hidden="true"><source src="media/hero-loop.mp4" type="video/mp4"></video>
+          <img class="before" src="img/hero.jpg" alt="原始形象照：手扶场记板的钧宝">
+          <div class="bar"></div>
+          <div class="knob" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></div>
+          <span class="tag l"><span class="zh">原图</span><span class="en">PHOTO</span></span><span class="tag r"><span class="zh">AI 动态</span><span class="en">AI MOTION</span></span>
+          <input type="range" min="0" max="100" value="50" aria-label="对比原图与 AI 动态 Compare photo and AI motion">
+        </div>
+        <figcaption class="lab-cap"><span class="zh">形象照 → 6 秒循环镜头</span><span class="en">Portrait → 6-second loop</span> · <code>seedance 2.5 · 3:4</code></figcaption>
+      </figure>
+      <figure style="margin:0">
+        <div class="ba land" data-ba>
+          <video class="bgv" autoplay muted loop playsinline preload="metadata" poster="img/nwa-03.jpg" aria-hidden="true"><source src="media/nwa-loop2.mp4" type="video/mp4"></video>
+          <img class="before" src="img/nwa-03.jpg" alt="《永不孤行》剧照原图：山坡上欢呼的孩子">
+          <div class="bar"></div>
+          <div class="knob" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></div>
+          <span class="tag l"><span class="zh">剧照</span><span class="en">STILL</span></span><span class="tag r"><span class="zh">AI 动态</span><span class="en">AI MOTION</span></span>
+          <input type="range" min="0" max="100" value="50" aria-label="对比剧照与 AI 动态 Compare still and AI motion">
+        </div>
+        <figcaption class="lab-cap"><span class="zh">《永不孤行》剧照 → 6 秒循环镜头</span><span class="en">Never Walk Alone still → 6-second loop</span> · <code>seedance 2.5 · 16:9</code></figcaption>
+      </figure>
+    </div>
+    <div class="lab-note">
+      <div class="rise"><b><span class="zh">首尾同帧</span><span class="en">SAME FIRST &amp; LAST FRAME</span></b><span><span class="zh">原图同时作为首帧和尾帧，镜头能无缝循环，放在网页上不跳帧。</span><span class="en">The photo is both first and last frame, so the shot loops seamlessly on a web page.</span></span></div>
+      <div class="rise"><b><span class="zh">只动该动的</span><span class="en">MOVE ONLY WHAT SHOULD</span></b><span><span class="zh">提示词锁定人物、服装和构图，只让光线、呼吸、风去动。</span><span class="en">The prompt locks face, wardrobe and framing, and lets only light, breath and wind move.</span></span></div>
+      <div class="rise"><b><span class="zh">720P 出片</span><span class="en">RENDER AT 720P</span></b><span><span class="zh">背景循环用 720p 生成再压缩，画质够用，成本和加载都更省。</span><span class="en">Background loops render at 720p and compress well: good enough, cheaper, and faster to load.</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 TOOLS -->
+<section class="sec" id="tools" aria-labelledby="tools-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow t-ai">03 · TOOLS</div>
+        <h2 class="h2" id="tools-h"><span class="zh"><span class="ln split">我自己写的 AI 工具</span></span><span class="en"><span class="ln split">AI tools I built</span></span></h2>
+      </div>
+      <p class="rise"><span class="zh">做片子缺什么工具，我就自己写一个。下面这些都已经上线。</span><span class="en">When a production needs a tool that doesn't exist, I write it. These are all live.</span></p>
+    </div>
+    <article class="feature-tool rise" aria-labelledby="pt-h">
+      <div>
+        <div class="url"><span class="dot" aria-hidden="true"></span>prompt.junbao.ai</div>
+        <h3 id="pt-h"><span class="zh"><span class="ln">人物提示词</span><span class="ln">工作台</span></span><span class="en"><span class="ln">Character</span><span class="ln">Prompt Studio</span></span></h3>
+        <p><span class="zh">把一个角色的设定整理清楚：真人、动漫还是 3D，长相、服装、气质，一次填好，生成主流创作平台能直接用的提示词。我上课和自己拍片都在用。</span><span class="en">Define a character once (live-action, anime or 3D; face, wardrobe, mood) and get prompts ready for the major creative platforms. I use it in class and on my own films.</span></p>
+        <ul>
+          <li><span class="zh">真人角色</span><span class="en">Live-action</span></li>
+          <li><span class="zh">动漫角色</span><span class="en">Anime</span></li>
+          <li><span class="zh">3D 角色</span><span class="en">3D</span></li>
+          <li><span class="zh">多平台提示词</span><span class="en">Multi-platform prompts</span></li>
+        </ul>
+        <a class="btn ai" href="https://prompt.junbao.ai" target="_blank" rel="noopener"><span class="zh">打开工作台</span><span class="en">Open the studio</span> ↗</a>
+      </div>
+      <div class="mock" aria-hidden="true">
+        <div class="mock-bar"><i></i><i></i><i></i><span>prompt.junbao.ai</span></div>
+        <div class="mock-body">
+          <div class="mock-row"><span class="k zh">类型</span><span class="k en">type</span><span class="v"><span class="zh">真人</span><span class="en">live-action</span></span></div>
+          <div class="mock-row"><span class="k zh">角色</span><span class="k en">role</span><span class="v"><span class="zh">海盗船长，三十多岁</span><span class="en">pirate captain, 30s</span></span></div>
+          <div class="mock-row"><span class="k zh">造型</span><span class="k en">look</span><span class="v"><span class="zh">三角帽、旧皮外套、肩上一只金刚鹦鹉</span><span class="en">tricorne hat, worn leather coat, a macaw on the shoulder</span></span></div>
+          <div class="mock-row"><span class="k zh">光线</span><span class="k en">light</span><span class="v"><span class="zh">午后海面逆光</span><span class="en">afternoon backlight over the sea</span></span></div>
+          <div class="mock-out" id="mockout"></div>
+        </div>
+      </div>
+    </article>
+    <div class="tools">
+      <div class="tool rise">
+        <div class="url"><span class="zh">微信搜索「AI 影展通」</span><span class="en">Search “AI 影展通” in WeChat</span></div>
+        <h4><span class="zh">AI 影展通 · 小程序</span><span class="en">AI Film Festival Connect · mini-program</span></h4>
+        <p><span class="zh">AI 电影节一站式投稿。</span><span class="en">One-stop submissions to AI film festivals.</span></p>
+      </div>
+      <a class="tool rise" href="https://laurelume.com" target="_blank" rel="noopener">
+        <div class="url">laurelume.com ↗</div>
+        <h4>Laurelume</h4>
+        <p><span class="zh">全球 AI 电影节、品牌征集与创作基金信息，对照官方来源核对截止日期、费用与规则。</span><span class="en">AI film festivals, brand calls and creative funding, checked against official sources.</span></p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 04 METHOD -->
+<section class="sec" id="method" aria-labelledby="method-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow t-ai">04 · METHOD</div>
+        <h2 class="h2" id="method-h"><span class="zh"><span class="ln split">按拍电影的顺序做 AI</span></span><span class="en"><span class="ln split">AI, in the order</span><span class="ln split">films are made</span></span></h2>
+      </div>
+      <p class="rise"><span class="zh">多数人一上来就写提示词。我先把片子想清楚，模型只负责最后一步。</span><span class="en">Most people start by typing prompts. I work the film out first; the model only does the last step.</span></p>
+    </div>
+    <ol class="steps">
+      <li class="rise"><h4><span class="zh">创意</span><span class="en">Idea</span></h4><p><span class="zh">一句话说清楚这个片子讲什么、给谁看。</span><span class="en">One sentence on what the film is about and who it's for.</span></p></li>
+      <li class="rise"><h4><span class="zh">故事大纲与剧本</span><span class="en">Outline &amp; script</span></h4><p><span class="zh">起承转合定下来，再写成能拍的剧本。</span><span class="en">Fix the arc, then write a shootable script.</span></p></li>
+      <li class="rise"><h4><span class="zh">分镜</span><span class="en">Storyboard</span></h4><p><span class="zh">每个镜头的景别、运镜、时长先排好。</span><span class="en">Plan framing, camera move and length for every shot.</span></p></li>
+      <li class="rise"><h4><span class="zh">角色、场景、道具设定</span><span class="en">Characters, sets, props</span></h4><p><span class="zh">先做设定图，保证每个镜头里的人和物是同一个。</span><span class="en">Design sheets first, so people and objects stay consistent across shots.</span></p><div class="use"><span class="zh">用到：</span><span class="en">uses: </span><a href="https://prompt.junbao.ai" target="_blank" rel="noopener">prompt.junbao.ai ↗</a></div></li>
+      <li class="rise"><h4><span class="zh">镜头生成</span><span class="en">Shot generation</span></h4><p><span class="zh">按分镜逐个生成镜头，挑最好的那一条。</span><span class="en">Generate shot by shot from the storyboard and keep the best take.</span></p><div class="use">Seedance · Higgsfield · <span class="zh">即梦</span><span class="en">Jimeng</span></div></li>
+      <li class="rise"><h4><span class="zh">剪辑与声音</span><span class="en">Edit &amp; sound</span></h4><p><span class="zh">能在剪辑里解决的，不重新生成。配音、音乐、字幕最后统一。</span><span class="en">Fix it in the edit before regenerating. Voice, music and captions come together last.</span></p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 05 TEACHING -->
+<section class="sec" id="teach" aria-labelledby="teach-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow t-ai">05 · COURSES</div>
+        <h2 class="h2" id="teach-h"><span class="zh"><span class="ln split">把方法教给你</span></span><span class="en"><span class="ln split">I'll teach you the method</span></span></h2>
+      </div>
+      <p class="rise"><span class="zh">上面的流程，就是我课上教的内容。零基础也能跟上。</span><span class="en">The pipeline above is exactly what I teach. Beginners can keep up.</span></p>
+    </div>
+    <div class="courses">
+      <div class="course hl rise">
+        <div class="who"><span class="zh">零基础成人</span><span class="en">ADULT BEGINNERS</span></div>
+        <h3><span class="zh">AI 短片创作课</span><span class="en">AI Short-Film Course</span></h3>
+        <p><span class="zh">从一个想法到一条完整短片。第一节课就能做出 15 秒成片。</span><span class="en">From an idea to a finished short. You make a 15-second film in the first class.</span></p>
+        <ul><li><span class="zh">家长班、妈妈班</span><span class="en">Parent and moms' cohorts</span></li><li><span class="zh">用即梦，上手快</span><span class="en">Built on Jimeng, easy to start</span></li></ul>
+      </div>
+      <div class="course rise">
+        <div class="who"><span class="zh">学校</span><span class="en">SCHOOLS</span></div>
+        <h3><span class="zh">学校与家长课程</span><span class="en">School &amp; parent programs</span></h3>
+        <p><span class="zh">北京世青国际学校（BWYA）PTA 家长课程：AI 图像与 AI 视频工作坊，配中英双语提示词讲义。</span><span class="en">BWYA PTA parent program: AI image and AI video workshops with bilingual prompt handouts.</span></p>
+      </div>
+      <div class="course rise">
+        <div class="who"><span class="zh">企业与机构</span><span class="en">COMPANIES</span></div>
+        <h3><span class="zh">定制内训</span><span class="en">Custom training</span></h3>
+        <p><span class="zh">按团队的业务定制：宣传片、产品短视频、内容批量生产的 AI 工作流。</span><span class="en">Built around your team's work: brand films, product shorts, and AI workflows for content at scale.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact" aria-labelledby="contact-h" style="padding-top:0;border-top:0">
+  <div class="wrap">
+    <div class="cta rise">
+      <div>
+        <div class="eyebrow t-ai">CONTACT</div>
+        <h2 id="contact-h" style="margin-top:14px"><span class="zh"><span class="ln">想做 AI 片子，</span><span class="ln">或者想学？</span></span><span class="en"><span class="ln">Making an AI film,</span><span class="ln">or want to learn?</span></span></h2>
+        <p><span class="zh">AI 影像创作 · 课程与内训 · AI 工具定制，加微信直接聊。</span><span class="en">AI filmmaking, courses and training, custom AI tools. Message me on WeChat.</span></p>
+      </div>
+      <div class="ways">
+        <div class="way"><div><small><span class="zh">微信</span><span class="en">WeChat</span></small><b id="wx">18533537783</b></div><button class="copy" type="button" data-copy="wx"><span class="zh">复制</span><span class="en">Copy</span></button></div>
+        <div class="way"><div><small><span class="zh">邮箱</span><span class="en">Email</span></small><b id="em">fanfubao@163.com</b></div><button class="copy" type="button" data-copy="em"><span class="zh">复制</span><span class="en">Copy</span></button></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-l"><img src="img/junbao-symbol-white.png" alt="" aria-hidden="true"><span>© 2026 <span class="zh">钧宝</span> JUNBAO</span></div>
+    <div style="display:flex;gap:18px;font-family:var(--mono)"><a href="index.html">junbao.ai</a><a href="https://prompt.junbao.ai" target="_blank" rel="noopener">prompt.junbao.ai ↗</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function setLang(l){
+    root.classList.toggle('l-en',l==='en');root.lang=l==='en'?'en':'zh-CN';
+    document.getElementById('btn-zh').setAttribute('aria-pressed',String(l!=='en'));
+    document.getElementById('btn-en').setAttribute('aria-pressed',String(l==='en'));
+    try{localStorage.setItem('jb-lang',l)}catch(e){}
+    startMock();
+  }
+  var saved='zh';try{saved=localStorage.getItem('jb-lang')||'zh'}catch(e){}
+
+  /* Chinese: keep Latin words and numbers attached to neighbouring Chinese */
+  document.querySelectorAll('.zh').forEach(function(z){
+    var w=document.createTreeWalker(z,NodeFilter.SHOW_TEXT),n;
+    while((n=w.nextNode())){n.nodeValue=n.nodeValue.replace(/([A-Za-z0-9]) (?=[㐀-鿿（])/g,'$1 ').replace(/([㐀-鿿]) (?=[A-Za-z0-9])/g,'$1 ')}
+  });
+
+  /* split letters */
+  document.querySelectorAll('.split').forEach(function(el){
+    var d=parseInt(el.getAttribute('data-d')||'0',10),i=0;
+    (function walk(node){
+      Array.prototype.slice.call(node.childNodes).forEach(function(n){
+        if(n.nodeType===3){var f=document.createDocumentFragment();Array.from(n.textContent).forEach(function(c){var s=document.createElement('span');s.className='ch';s.textContent=c;s.style.setProperty('--i',i++);f.appendChild(s)});n.parentNode.replaceChild(f,n)}
+        else if(n.nodeType===1)walk(n);
+      });
+    })(el);
+    el.style.setProperty('--d',d+'ms');
+  });
+  var vh=window.innerHeight;
+  var io='IntersectionObserver' in window&&!reduce?new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var t=e.target;if(t.classList.contains('split'))t.classList.add('anim');if(t.classList.contains('rise'))t.classList.remove('wait');io.unobserve(t)})},{rootMargin:'0px 0px -8% 0px'}):null;
+  document.querySelectorAll('.split').forEach(function(el){if(reduce)return;if(!io||el.getBoundingClientRect().top<vh)el.classList.add('anim');else io.observe(el)});
+  document.querySelectorAll('.rise').forEach(function(el){if(io&&el.getBoundingClientRect().top>vh){el.classList.add('wait');io.observe(el)}});
+
+  /* clock */
+  var ck=document.getElementById('clock'),t0=performance.now();
+  function pad(n){return(n<10?'0':'')+n}
+  (function tick(now){var f=Math.floor(((now||t0)-t0)/1000*24),s=Math.floor(f/24),m=Math.floor(s/60);ck.textContent=pad(Math.floor(m/60))+':'+pad(m%60)+':'+pad(s%60)+':'+pad(f%24);if(!reduce)requestAnimationFrame(tick)})();
+
+  /* sub-nav highlight */
+  var links=[].slice.call(document.querySelectorAll('#subnav a'));
+  if('IntersectionObserver' in window){
+    var so=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){var on=a.getAttribute('href')==='#'+e.target.id;a.classList.toggle('on',on);if(on&&a.scrollIntoView&&window.innerWidth<700)a.parentNode.scrollTo({left:a.offsetLeft-20,behavior:'smooth'})})}})},{rootMargin:'-45% 0px -50% 0px'});
+    ['works','lab','tools','method','teach'].forEach(function(id){so.observe(document.getElementById(id))});
+  }
+
+  /* before / after */
+  document.querySelectorAll('[data-ba]').forEach(function(b){
+    var r=b.querySelector('input');
+    function set(v){b.style.setProperty('--pos',v+'%')}
+    r.addEventListener('input',function(){set(r.value)});
+    set(r.value);
+    if(!reduce){var t=0,auto=true;r.addEventListener('pointerdown',function(){auto=false});
+      (function sweep(){if(!auto)return;t+=0.012;var v=50+28*Math.sin(t);r.value=v;set(v);requestAnimationFrame(sweep)})();}
+  });
+
+  /* background loops play only while visible */
+  var bg=document.querySelectorAll('video.bgv');
+  if(reduce)bg.forEach(function(v){v.removeAttribute('autoplay');v.pause()});
+  else if('IntersectionObserver' in window){var vio=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.05});bg.forEach(function(v){vio.observe(v)})}
+
+  /* players */
+  document.querySelectorAll('.player').forEach(function(p){
+    var v=p.querySelector('video');
+    p.querySelector('.play').addEventListener('click',function(){
+      document.querySelectorAll('.player video').forEach(function(o){if(o!==v)o.pause()});
+      if(!v.getAttribute('src'))v.src=p.getAttribute('data-src');
+      v.controls=true;p.classList.add('on');var pr=v.play();if(pr&&pr.catch)pr.catch(function(){});
+    });
+  });
+
+  /* prompt studio mock: types a sample prompt */
+  var out=document.getElementById('mockout'),mockTimer=null;
+  var P={zh:'真人电影质感，三十多岁的海盗船长，头戴三角帽，身穿磨旧的皮外套，右肩站着一只红色金刚鹦鹉，午后海面逆光，2.35:1 宽银幕构图，浅景深，胶片颗粒',en:'cinematic live-action, a pirate captain in his 30s, tricorne hat, worn leather coat, a red macaw on his right shoulder, afternoon backlight over the sea, 2.35:1 widescreen framing, shallow depth of field, film grain'};
+  function startMock(){
+    clearTimeout(mockTimer);
+    var txt=P[root.classList.contains('l-en')?'en':'zh'];
+    if(reduce){out.textContent=txt;return}
+    var k=0;
+    (function step(){out.innerHTML='';out.appendChild(document.createTextNode(txt.slice(0,k)));var c=document.createElement('span');c.className='caret';out.appendChild(c);
+      if(k<txt.length){k+=1;mockTimer=setTimeout(step,45)}else{mockTimer=setTimeout(function(){k=0;step()},3200)}})();
+  }
+  setLang(saved);
+  document.getElementById('btn-zh').addEventListener('click',function(){setLang('zh')});
+  document.getElementById('btn-en').addEventListener('click',function(){setLang('en')});
+
+  /* copy */
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.getAttribute('data-copy')),txt=el.textContent.trim();
+      function done(ok){var zh=b.querySelector('.zh'),en=b.querySelector('.en');zh.textContent=ok?'已复制':'请长按选择';en.textContent=ok?'Copied':'Select it';setTimeout(function(){zh.textContent='复制';en.textContent='Copy'},1800)}
+      function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);done(false)}
+      try{navigator.clipboard.writeText(txt).then(function(){done(true)},sel)}catch(e){sel()}
+    });
+  });
+
+  /* grain */
+  var c=document.getElementById('grain'),ctx=c.getContext('2d'),W=160,H=160;c.width=W;c.height=H;
+  var img=ctx.createImageData(W,H),last=0;
+  (function grain(now){if(!now||now-last>80){last=now||0;var d=img.data;for(var i=0;i<d.length;i+=4){var g=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=g;d[i+3]=255}ctx.putImageData(img,0,0)}if(!reduce)requestAnimationFrame(grain)})();
+})();
+</script>
+</body>
+</html>
