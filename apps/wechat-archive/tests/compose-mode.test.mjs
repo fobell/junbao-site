@@ -1,7 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { validateDeployment } from "../scripts/deployment-check.mjs";
 
 const choose = (extra = {}) => execFileSync("bash", ["-c", 'source scripts/compose.sh; docker() { printf "%s\\n" "$@"; }; dc config --quiet'], {
@@ -26,4 +28,21 @@ test("production mode and concurrency validation reject unsafe values", () => {
   assert.equal(validateDeployment(base).domain, "tools.junbao.ai");
   for (const name of ["WORKER_CONCURRENCY", "BROWSER_MAX_SESSIONS", "BROWSER_MAX_CONTEXTS"])
     for (const value of ["0", "-1", "1.5", "NaN", ""]) assert.throws(() => validateDeployment({ ...base, [name]: value }));
+});
+test("dotenv quotes, comments and whitespace keep the shared gateway mode", () => {
+  const script = resolve("scripts/compose.sh");
+  const folder = mkdtempSync(join(tmpdir(), "wechat-mode-"));
+  const run = () => execFileSync("bash", ["-ec", 'source "$1"; printf "%s" "$compose_file"', "bash", script], {
+    cwd: folder, env: { ...process.env, DEPLOYMENT_MODE: "", COMPOSE_FILE: "", COMPOSE_PROJECT_NAME: "", COMPOSE_PROFILES: "" }, encoding: "utf8", stdio: "pipe",
+  });
+  try {
+    for (const line of ['DEPLOYMENT_MODE="tools"', "DEPLOYMENT_MODE='tools'", ' export DEPLOYMENT_MODE = tools # shared gateway', 'DEPLOYMENT_MODE=tools\r\n']) {
+      writeFileSync(join(folder, ".env"), line);
+      assert.equal(run(), "compose.tools.yaml");
+    }
+    for (const line of ['DEPLOYMENT_MODE=', 'DEPLOYMENT_MODE="tools', 'DEPLOYMENT_MODE=unknown']) {
+      writeFileSync(join(folder, ".env"), line);
+      assert.throws(run);
+    }
+  } finally { rmSync(folder, { recursive: true, force: true }); }
 });

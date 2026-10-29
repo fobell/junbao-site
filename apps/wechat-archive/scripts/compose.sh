@@ -6,7 +6,19 @@
 }
 deployment_mode="${DEPLOYMENT_MODE:-}"
 if [[ -z "$deployment_mode" && -f .env ]]; then
-  deployment_mode="$(sed -n 's/^DEPLOYMENT_MODE=\([a-z-]*\)[[:space:]]*$/\1/p' .env)"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    if [[ "$line" =~ ^[[:space:]]*(export[[:space:]]+)?DEPLOYMENT_MODE[[:space:]]*= ]]; then
+      raw="${line#*=}"
+      raw="${raw%%#*}"
+      raw="$(printf '%s' "$raw" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+      case "$raw" in
+        tools|\"tools\"|\'tools\') deployment_mode=tools ;;
+        standalone|\"standalone\"|\'standalone\') deployment_mode=standalone ;;
+        *) printf '%s\n' 'Invalid DEPLOYMENT_MODE in .env; expected tools or standalone.' >&2; return 1 ;;
+      esac
+    fi
+  done < .env
 fi
 case "${deployment_mode:-standalone}" in
   standalone) deployment_mode=standalone; compose_file=compose.yaml ;;
