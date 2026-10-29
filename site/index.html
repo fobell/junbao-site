@@ -254,6 +254,8 @@ a.tool:hover{border-color:var(--ai);transform:translateY(-3px)}
 .tool h4{font-size:19px;font-weight:700;line-height:1.35}
 .tool p{font-size:14px;color:var(--fg-2);line-height:1.65}
 .tool .kind{margin-top:auto;padding-top:6px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--mute)}
+.tools-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wk-hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;margin:clamp(40px,5vw,64px) 0 14px}
 @media (max-width:1000px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.tools{grid-template-columns:1fr}}
 
@@ -322,6 +324,7 @@ footer img{width:20px;height:20px}
   html{scroll-behavior:auto}
 }
 </style>
+<link rel="stylesheet" href="works.css">
 
 
 </head>
@@ -535,24 +538,13 @@ footer img{width:20px;height:20px}
       <p class="rise"><span class="zh">用 AI 拍片，为 AI 写工具，再把方法教给更多人。<a href="ai.html" style="color:var(--ai);margin-left:8px" class="nw">完整 AI 页面 →</a></span><span class="en">Making films with AI, writing tools for AI, and teaching the method to others. <a href="ai.html" style="color:var(--ai)">Full AI page →</a></span></p>
     </div>
 
-    <div class="works">
-      <div>
-        <div class="player wide" data-src="media/oct7.mp4">
-          <video preload="none" playsinline poster="media/oct7-poster.jpg" aria-label="AI 短片《10月7日》"></video>
-          <button class="play" type="button"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span class="zh">播放 · 1′35″</span><span class="en">Play · 1′35″</span></span></button>
-        </div>
-        <div class="wcap"><b><span class="zh">AI 短片《10月7日》</span><span class="en">October 7 · AI short film</span></b><span class="zh">为北京世青国际学校 AI 课程创作 · 本人主演</span><span class="en">Made for the BWYA AI class · starring myself</span></div>
-      </div>
-      <div class="tallbox">
-        <div class="player tall" data-src="media/demo2.mp4">
-          <video preload="none" playsinline poster="media/demo2-poster.jpg" aria-label="竖屏 AI 短片"></video>
-          <button class="play" type="button"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span class="zh">播放 · 29″</span><span class="en">Play · 29″</span></span></button>
-        </div>
-        <div class="wcap"><b><span class="zh">竖屏 AI 短片</span><span class="en">Vertical AI short</span></b><span class="zh">AI 分身出镜 · 动态字幕</span><span class="en">AI double on camera · kinetic captions</span></div>
-      </div>
+    <div class="wk-hd rise">
+      <div class="eyebrow t-ai">WORKS · <span class="zh">作品案例</span><span class="en">Works &amp; cases</span></div>
+      <a href="ai.html#works" class="nw" style="color:var(--ai);font-size:15px"><span class="zh">在 AI 页面查看 →</span><span class="en">See on the AI page →</span></a>
     </div>
+    <div data-works></div>
 
-    <div class="tools">
+    <div class="tools tools-2">
       <a class="tool rise" href="https://prompt.junbao.ai" target="_blank" rel="noopener">
         <div class="url"><i></i>prompt.junbao.ai</div>
         <h4><span class="zh">人物提示词工作台</span><span class="en">Character Prompt Workbench</span></h4>
@@ -565,18 +557,6 @@ footer img{width:20px;height:20px}
         <p><span class="zh">AI 电影节一站式投稿的微信小程序。</span><span class="en">A WeChat mini-program for submitting AI films to festivals.</span></p>
         <div class="kind">MINI-PROGRAM</div>
       </div>
-      <a class="tool rise" href="https://laurelume.com" target="_blank" rel="noopener">
-        <div class="url"><i></i>laurelume.com</div>
-        <h4>Laurelume</h4>
-        <p><span class="zh">全球 AI 电影节、品牌征集与创作基金信息平台，对照官方来源核对截止日期、费用与规则。</span><span class="en">AI film festivals, brand calls and creative funding, checked against official sources for deadlines, fees and rules.</span></p>
-        <div class="kind">WEBSITE</div>
-      </a>
-      <a class="tool rise" href="https://dramarabbit.com" target="_blank" rel="noopener">
-        <div class="url"><i></i>dramarabbit.com</div>
-        <h4>DramaRabbit</h4>
-        <p><span class="zh">面向北美观众的独立短剧指南，追踪 7 个平台的上新与免费集数。</span><span class="en">An independent short-drama guide for North America, tracking seven platforms and their free episodes.</span></p>
-        <div class="kind">WEBSITE</div>
-      </a>
     </div>
 
     <div class="teach rise">
@@ -643,6 +623,7 @@ footer img{width:20px;height:20px}
   </div>
 </footer>
 
+<script src="works.js"></script>
 <script>
 (function(){
   var root=document.documentElement;
