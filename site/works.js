@@ -1,7 +1,10 @@
 /* JUNBAO · Works & cases
-   Shared by index.html and ai.html: any element with [data-works] becomes the works board.
+   Shared by works.html, index.html and ai.html.
+   [data-works]          full board: marquee, filter tabs, every work
+   [data-works="teaser"] only the entries marked pick:true, plus a link to works.html
 
    To add a work, append one entry to WORKS (order = display order):
+     any    pick:true also shows it in the home / AI page teaser
      video  src (file played and downloaded), poster, loop (optional muted preview), ar ("w/h"), dur, size, file (download name)
      music  src, secs, size, file, peaks (optional list of 0–100 levels for the waveform)
      site   url, thumb (optional screenshot, about 3:2), hue (cover colour when there is no thumb)
@@ -11,13 +14,19 @@
 'use strict';
 
 var WORKS=[
-  {type:'video',ar:'1600/686',src:'media/oct7.mp4',loop:'media/oct7-loop.mp4',poster:'media/oct7-poster.jpg',dur:'1′35″',size:'14 MB',file:'JUNBAO-October-7.mp4',
+  {type:'video',pick:true,ar:'1600/686',src:'media/oct7.mp4',loop:'media/oct7-loop.mp4',poster:'media/oct7-poster.jpg',dur:'1′35″',size:'14 MB',file:'JUNBAO-October-7.mp4',
    title:{zh:'《10月7日》',en:'October 7'},
    meta:{zh:'AI 短片 · 为北京世青国际学校 AI 课程创作 · 本人主演',en:'AI short film · made for the BWYA AI class · starring myself'}},
-  {type:'video',ar:'9/16',src:'media/demo2.mp4',loop:'media/demo2-loop.mp4',poster:'media/demo2-poster.jpg',dur:'29″',size:'2.3 MB',file:'JUNBAO-vertical-AI-short.mp4',
+  {type:'video',pick:true,ar:'9/16',src:'media/demo2.mp4',loop:'media/demo2-loop.mp4',poster:'media/demo2-poster.jpg',dur:'29″',size:'2.3 MB',file:'JUNBAO-vertical-AI-short.mp4',
    title:{zh:'竖屏 AI 短片',en:'Vertical AI short'},
    meta:{zh:'AI 分身出镜 · 动态字幕',en:'AI double on camera · kinetic captions'}},
-  {type:'music',src:'media/i-love-ib.mp3',secs:80.2,size:'2.5 MB',file:'JUNBAO - I Love IB.mp3',
+  {type:'video',ar:'1280/720',src:'media/wolfstar.mp4',loop:'media/wolfstar-loop.mp4',poster:'media/wolfstar-poster.jpg',dur:'30″',size:'9.8 MB',file:'JUNBAO-Wolfstar.mp4',
+   title:{zh:'Wolfstar',en:'Wolfstar'},
+   meta:{zh:'AI 炫技短片 · 主角是我的孩子',en:'AI showcase short · starring my kid'}},
+  {type:'video',ar:'1024/576',src:'media/gtx.mp4',loop:'media/gtx-loop.mp4',poster:'media/gtx-poster.jpg',dur:'27″',size:'4.0 MB',file:'JUNBAO-Gongyuan-Guantianxia.mp4',
+   title:{zh:'公元·观天下 地产宣传片',en:'Gongyuan Guantianxia · property film'},
+   meta:{zh:'用甲方提供的建筑效果图生成动态镜头 · 画质受限于原始效果图',en:'Shots generated from the client’s architectural renderings · resolution limited by the source images'}},
+  {type:'music',pick:true,src:'media/i-love-ib.mp3',secs:80.2,size:'2.5 MB',file:'JUNBAO - I Love IB.mp3',
    title:{zh:'I Love IB',en:'I Love IB'},
    meta:{zh:'AI 音乐 Demo · 可在线试听，也可下载',en:'AI music demo · stream it here or download it'},
    peaks:[0,0,0,0,0,3,23,37,38,69,68,54,71,67,59,53,73,42,78,66,55,69,55,46,62,65,43,75,72,77,80,76,76,38,33,46,47,42,38,34,35,32,31,35,35,37,33,36,42,61,60,59,73,57,54,51,40,33,61,42,60,46,33,50,49,46,55,37,37,58,40,58,55,60,42,56,42,63,42,44,61,45,61,53,42,48,61,45,69,41,39,61,47,68,65,64,46,69,45,67,35,35,39,39,34,33,34,40,37,42,35,37,31,27,36,43,44,49,53,57,44,68,45,37,35,34,48,45,43,44,35,35,48,43,43,43,32,45,42,47,48,58,54,69,70,43,49,44,58,87,81,88,46,54,69,80,83,72,77,64,80,81,100,92,90,81,65,32,31,33,34,32,0,0,0,0,0,0,0,0]},
@@ -66,7 +75,7 @@ function videoCard(w,n){
       (w.loop?'<video class="wk-prev" muted loop playsinline preload="none" data-src="'+w.loop+'" aria-hidden="true"></video>':'')+
       '<video class="wk-full" playsinline preload="none" data-src="'+w.src+'"></video>'+
       '<button class="wk-play" type="button" aria-label="播放 Play: '+esc(w.title.en)+'"><span class="wk-ring" aria-hidden="true"></span>'+I.play+'</button>'+
-      '<span class="wk-badge">VIDEO · '+(tall?'9:16':'2.35:1')+' · '+w.dur+'</span>'+
+      '<span class="wk-badge">VIDEO · '+(tall?'9:16':ar>2?'2.35:1':'16:9')+' · '+w.dur+'</span>'+
     '</div>'+
     '<div class="wk-info"><span class="wk-no">'+pad2(n)+'</span><div class="wk-txt"><h3 class="wk-t">'+L(w.title)+'</h3><p class="wk-m">'+L(w.meta)+'</p></div>'+
       '<a class="wk-dl" href="'+w.src+'" download="'+esc(w.file)+'">'+I.dl+'<span class="zh">下载</span><span class="en">Download</span><small>MP4 · '+w.size+'</small></a></div>'+
@@ -104,24 +113,39 @@ function siteCard(w,n){
   '</a>';
 }
 
+function counts(){var c={all:WORKS.length};WORKS.forEach(function(w){c[w.type]=(c[w.type]||0)+1});return c}
+function cardsFor(list){var h='';list.forEach(function(w){var n=WORKS.indexOf(w)+1;h+=w.type==='video'?videoCard(w,n):w.type==='music'?musicCard(w,n):w.type==='site'?siteCard(w,n):''});return h}
+function wireCards(root){
+  root.querySelectorAll('.wk-video').forEach(wireVideo);
+  root.querySelectorAll('.wk-music').forEach(wireMusic);
+  root.querySelectorAll('.wk-site').forEach(wireTilt);
+  reveal(root);
+}
+function buildTeaser(root){
+  var count=counts(),picks=WORKS.filter(function(w){return w.pick});
+  var parts=TYPES.filter(function(t){return t.k!=='all'&&count[t.k]}).map(function(t){return '<span><b>'+pad2(count[t.k])+'</b>'+L(t)+'</span>'}).join('');
+  root.innerHTML='<div class="wk-grid">'+cardsFor(picks)+
+    '<a class="wk-card wk-cta" href="works.html"><span class="wk-cta-k">ALL WORKS</span>'+
+    '<span class="wk-cta-t"><span class="zh">查看全部 '+count.all+' 件作品</span><span class="en">See all '+count.all+' works</span><i aria-hidden="true">→</i></span>'+
+    '<span class="wk-cta-n">'+parts+'</span></a></div>';
+  root.classList.add('wk','wk-teaser');
+  wireCards(root);
+}
 function build(root){
-  var count={all:WORKS.length};WORKS.forEach(function(w){count[w.type]=(count[w.type]||0)+1});
+  if(root.getAttribute('data-works')==='teaser')return buildTeaser(root);
+  var count=counts();
   var types=TYPES.filter(function(t){return count[t.k]});
   var words=types.filter(function(t){return t.word});
   var mq='';for(var r=0;r<4;r++)words.forEach(function(t){mq+='<span data-t="'+t.k+'">'+t.word+'</span><i>✦</i>'});
   var tabs=types.map(function(t,i){return '<button type="button" role="tab" data-f="'+t.k+'" aria-selected="'+(i===0)+'">'+L(t)+'<sup>'+pad2(count[t.k])+'</sup></button>'}).join('');
-  var cards='',n=0;
-  WORKS.forEach(function(w){n++;cards+=w.type==='video'?videoCard(w,n):w.type==='music'?musicCard(w,n):w.type==='site'?siteCard(w,n):''});
+  var cards=cardsFor(WORKS);
   root.innerHTML='<div class="wk-marquee" aria-hidden="true"><div class="wk-mq">'+mq+'</div></div>'+
     '<div class="wk-bar"><div class="wk-tabs" role="tablist" aria-label="作品分类 Filter works">'+tabs+'<span class="wk-ind" aria-hidden="true"></span></div>'+
     '<span class="wk-total"><b>'+pad2(count.all)+'</b><span class="zh">件作品，持续更新</span><span class="en">works, and counting</span></span></div>'+
     '<div class="wk-grid">'+cards+'</div>';
   root.classList.add('wk');
   wireTabs(root);
-  root.querySelectorAll('.wk-video').forEach(wireVideo);
-  root.querySelectorAll('.wk-music').forEach(wireMusic);
-  root.querySelectorAll('.wk-site').forEach(wireTilt);
-  reveal(root);
+  wireCards(root);
 }
 
 function wireTabs(root){
@@ -257,5 +281,6 @@ function reveal(root){
   cards.forEach(function(c){io.observe(c)});
 }
 
+window.JB_WORKS=WORKS;window.JB_WORKS_COUNT=counts();
 document.querySelectorAll('[data-works]').forEach(build);
 })();
