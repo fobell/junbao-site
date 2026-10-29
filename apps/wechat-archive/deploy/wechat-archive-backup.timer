@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Wechat Archive Backup at Beijing 04:45
+
+[Timer]
+OnCalendar=*-*-* 04:45:00 Asia/Shanghai
+RandomizedDelaySec=5m
+Persistent=true
+Unit=wechat-archive-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,30 @@
+# Requires Docker Compose 2.24.4+ on Linux with journald.
+services:
+  caddy:
+    logging: !override
+      driver: journald
+      options: {tag: "wechat-archive/{{.Name}}"}
+  api:
+    logging: !override
+      driver: journald
+      options: {tag: "wechat-archive/{{.Name}}"}
+  worker:
+    logging: !override
+      driver: journald
+      options: {tag: "wechat-archive/{{.Name}}"}
+  browser:
+    logging: !override
+      driver: journald
+      options: {tag: "wechat-archive/{{.Name}}"}
+  egress-proxy:
+    logging: !override
+      driver: journald
+      options: {tag: "wechat-archive/{{.Name}}"}
+  db:
+    logging: !override
+      driver: journald
+      options: {tag: "wechat-archive/{{.Name}}"}
+  redis:
+    logging: !override
+      driver: journald
+      options: {tag: "wechat-archive/{{.Name}}"}

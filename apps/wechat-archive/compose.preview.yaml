@@ -1,0 +1,11 @@
+# Browser preview on this computer. Production uses compose.yaml with HTTPS.
+services:
+  api:
+    environment:
+      NODE_ENV: development
+      APP_ORIGIN: http://localhost:23000
+    ports: ["127.0.0.1:23000:3000"]
+  worker:
+    environment:
+      NODE_ENV: development
+      APP_ORIGIN: http://localhost:23000

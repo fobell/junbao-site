@@ -1,0 +1,11 @@
+# Only for local acceptance. Public production uses compose.yaml without this file.
+services:
+  api:
+    environment:
+      NODE_ENV: test
+      APP_ORIGIN: http://localhost:23000
+    ports: ["127.0.0.1:23000:3000"]
+  worker:
+    environment:
+      NODE_ENV: test
+      APP_ORIGIN: http://localhost:23000

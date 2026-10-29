@@ -1,0 +1,12 @@
+[Unit]
+Description=Encrypted Wechat Archive Backup
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/wechat-archive
+ExecStart=/bin/bash /opt/wechat-archive/scripts/backup.sh
+UMask=0077
+TimeoutStartSec=3h

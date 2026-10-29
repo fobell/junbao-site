@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist/server",
+    "rootDir": "src",
+    "sourceMap": true
+  },
+  "include": ["src/server", "src/worker", "src/browser", "src/shared"]
+}
