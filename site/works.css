@@ -184,3 +184,5 @@
 .top .logo{flex:none}
 @media (max-width:440px){.nav .wb{display:none}}
 @media (max-width:370px){.nav{gap:12px!important}.lang button{padding:6px 9px!important}}
+.top .logo-mark{display:none;width:24px;height:24px}
+@media (max-width:400px){.top .logo-full{display:none}.top .logo-mark{display:block}}
