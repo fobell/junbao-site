@@ -1,3 +1,4 @@
+import { normalizeBasePath } from "../shared/base-path.mjs";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadEnvFile } from "node:process";
@@ -15,11 +16,13 @@ function value(name: string, fallback = ""): string {
 export function positiveInteger(name: string, fallback: number) {
   const raw = value(name, String(fallback));
   const parsed = Number(raw);
-  if (!Number.isSafeInteger(parsed) || parsed < 1) throw new Error(`${name} must be a positive integer`);
+  if (!Number.isSafeInteger(parsed) || parsed < 1)
+    throw new Error(`${name} must be a positive integer`);
   return parsed;
 }
 export const config = {
   production: process.env.NODE_ENV === "production",
+  basePath: normalizeBasePath(value("APP_BASE_PATH")),
   port: Number(value("PORT", "3000")),
   origin: value("APP_ORIGIN", "http://localhost:5173").replace(/\/$/, ""),
   databaseUrl: value(
@@ -52,6 +55,13 @@ export const config = {
   maxExportBytes: 2 * 1024 ** 3,
 };
 export function validateConfig() {
+  if (
+    process.env.BUILT_APP_BASE_PATH !== undefined &&
+    config.basePath !== normalizeBasePath(process.env.BUILT_APP_BASE_PATH)
+  )
+    throw new Error(
+      "APP_BASE_PATH differs from the web build; rebuild the application image",
+    );
   if (!/^[a-f\d]{64}$/i.test(config.encryptionKey))
     throw new Error("APP_ENCRYPTION_KEY must be a 32-byte hex secret");
   if (config.browserToken.length < 32)

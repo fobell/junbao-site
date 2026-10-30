@@ -18,7 +18,7 @@ dc version
 node_tool() {
   docker run --rm --network none -v "$PWD:/work" -w /work node:24.22.2-bookworm-slim node "$@"
 }
-origin="$(node_tool scripts/deployment-check.mjs --origin)"
+origin="$(node_tool scripts/deployment-check.mjs --url)"
 if docker volume inspect wechat-archive_postgres_data >/dev/null 2>&1; then
   for key in database_password database_url encryption_key backup_key; do
     [[ -s "secrets/$key" ]] || { printf '%s\n' "已有数据库卷，但缺少 secrets/$key。请恢复原凭据，不自动生成替代密钥。"; exit 1; }

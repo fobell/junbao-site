@@ -1,0 +1,12 @@
+[
+  {
+    "id": "wechat-article-archive",
+    "name": "文藏",
+    "category": "公众号文章归档",
+    "description": "保存公众号文章与图片，集中检索，按需导出 Markdown。让散落的内容成为随时可查的资料库。",
+    "url": "/wechat-article-archive/",
+    "icon": "archive.svg",
+    "access": "需要登录",
+    "order": 10
+  }
+]

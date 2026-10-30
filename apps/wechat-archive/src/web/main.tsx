@@ -49,9 +49,19 @@ import {
 } from "../shared/types";
 import "./style.css";
 type Row = Record<string, any>;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const apiUrl = (path: string) => `${basePath}/api/v1${path}`;
+function ToolsLink() {
+  return basePath ? (
+    <a className="tools-link" href="/">
+      <ChevronLeft size={16} aria-hidden="true" />
+      所有工具
+    </a>
+  ) : null;
+}
 let csrf = "";
 async function api(path: string, body?: any, method?: string): Promise<any> {
-  const r = await fetch(`/api/v1${path}`, {
+  const r = await fetch(apiUrl(path), {
     method: method ?? (body === undefined ? "GET" : "POST"),
     headers: {
       ...(body !== undefined ? { "content-type": "application/json" } : {}),
@@ -307,6 +317,7 @@ function Login({ required }: { required: boolean }) {
         <small>私有部署 · 多账号管理 · Markdown 归档</small>
       </div>
       <section className="auth-form">
+        <ToolsLink />
         <div className="eyebrow">团队资料库</div>
         <h2>{required ? "创建管理员" : "欢迎回来"}</h2>
         <p className="muted">
@@ -368,6 +379,7 @@ function SecuritySetup({ user, onDone }: { user: Row; onDone: () => void }) {
     [codes, setCodes] = useState<string[]>([]);
   return (
     <main className="setup">
+      <ToolsLink />
       <div className="brand">
         <Archive />
         <b>文藏</b>
@@ -1553,7 +1565,7 @@ function Exports() {
               new Date(e.expires_at).getTime() > Date.now() ? (
                 <a
                   className="button primary"
-                  href={`/api/v1/exports/${e.id}/download`}
+                  href={apiUrl(`/exports/${e.id}/download`)}
                 >
                   <Download size={16} />
                   下载 ZIP
@@ -1788,6 +1800,7 @@ function Workspace({ user }: { user: Row }) {
         <div className="drawer-backdrop" onClick={() => setMobile(false)} />
       )}
       <aside className={`sidebar ${mobile ? "open" : ""}`}>
+        <ToolsLink />
         <div className="brand">
           <Archive size={26} />
           <b>文藏</b>

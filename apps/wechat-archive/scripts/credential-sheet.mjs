@@ -1,3 +1,4 @@
+import { applicationUrl } from "../src/shared/base-path.mjs";
 import { readFile, writeFile, stat } from "node:fs/promises";
 import { parseEnv } from "node:util";
 
@@ -33,7 +34,10 @@ if (!process.argv.includes("--include-secrets")) {
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        applicationUrl: env.APP_ORIGIN ?? "",
+        applicationUrl: applicationUrl(
+          env.APP_ORIGIN ?? "",
+          env.APP_BASE_PATH ?? "",
+        ),
         databaseUser: "archive",
         databaseName: "archive",
         secrets: values,

@@ -187,6 +187,74 @@ integration(
       const a = await one("SELECT * FROM articles WHERE id=$1", [articleId]);
       expect(a!.resource_state).toBe("complete");
     });
+    it("projects stored preview assets into the public path without changing the database", async () => {
+      const before = (await one(
+        "SELECT preview_html FROM article_versions WHERE article_id=$1",
+        [articleId],
+      ))!.preview_html;
+      const response = await app.inject({
+        url: `/api/v1/articles/${articleId}`,
+        headers,
+      });
+      expect(response.statusCode).toBe(200);
+      expect(response.json().version.preview_html).toContain(
+        `src="${config.basePath}/api/v1/assets/`,
+      );
+      expect(
+        (await one(
+          "SELECT preview_html FROM article_versions WHERE article_id=$1",
+          [articleId],
+        ))!.preview_html,
+      ).toBe(before);
+    });
+    it("scopes login and logout cookies while preserving origin and CSRF checks", async () => {
+      const login = await app.inject({
+        method: "POST",
+        url: "/api/v1/auth/login",
+        headers: { origin: config.origin },
+        payload: { username: "operator", password: "test-password-2026" },
+      });
+      expect(login.statusCode).toBe(200);
+      const live = login.cookies.find(
+        (c) => c.name === "archive_session" && c.value,
+      );
+      expect(live?.path).toBe(config.basePath || "/");
+      expect(live?.httpOnly).toBe(true);
+      expect(live?.sameSite).toBe("Strict");
+      if (config.basePath)
+        expect(login.cookies.some((c) => c.path === "/" && !c.value)).toBe(
+          true,
+        );
+      const sessionHeaders = {
+        origin: config.origin,
+        cookie: `archive_session=${live!.value}`,
+        "x-csrf-token": login.json().csrf,
+      };
+      const invalid = await app.inject({
+        method: "POST",
+        url: "/api/v1/auth/logout",
+        headers: {
+          ...sessionHeaders,
+          origin: config.origin + config.basePath + "/invalid",
+        },
+      });
+      expect(invalid.statusCode).toBe(403);
+      const logout = await app.inject({
+        method: "POST",
+        url: "/api/v1/auth/logout",
+        headers: sessionHeaders,
+      });
+      expect(logout.statusCode).toBe(200);
+      expect(
+        logout.cookies.some(
+          (c) => c.path === (config.basePath || "/") && !c.value,
+        ),
+      ).toBe(true);
+      expect(
+        (await app.inject({ url: "/api/v1/auth/me", headers: sessionHeaders }))
+          .statusCode,
+      ).toBe(401);
+    });
     it("preserves old versions and repairs only failed images", async () => {
       vi.mocked(safeFetch).mockRejectedValue(
         new AppError("IMAGE_FAILED", "fixture failed", 422),
@@ -389,6 +457,9 @@ integration(
       expect(res.json().total).toBeGreaterThan(0);
       const spec = await app.inject({ url: "/api/v1/openapi.json", headers });
       expect(spec.statusCode).toBe(200);
+      expect(spec.json().servers).toEqual([
+        { url: config.origin + config.basePath },
+      ]);
       expect(spec.json().paths["/api/v1/accounts"]).toBeTruthy();
       expect(
         spec.json().paths["/api/v1/exports"].post.responses["202"],

@@ -1,12 +1,15 @@
 ARG NODE_IMAGE=node:24.22.2-bookworm-slim
 FROM ${NODE_IMAGE} AS build
+ARG APP_BASE_PATH=
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run typecheck && npm run build
+RUN npm run typecheck && APP_BASE_PATH="$APP_BASE_PATH" npm run build
 
 FROM ${NODE_IMAGE} AS runtime
+ARG APP_BASE_PATH=
+ENV BUILT_APP_BASE_PATH=${APP_BASE_PATH}
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates unzip && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules

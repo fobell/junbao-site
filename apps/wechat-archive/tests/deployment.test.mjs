@@ -16,6 +16,8 @@ test("accepts production HTTPS and local storage without inventing an egress IP"
   assert.deepEqual(validateDeployment(valid), {
     domain: valid.DOMAIN,
     origin: valid.APP_ORIGIN,
+    basePath: "",
+    applicationUrl: valid.APP_ORIGIN,
     storage: "local",
     egressIp: "",
   });
@@ -35,6 +37,20 @@ test("rejects copied sample / local domains and mismatched HTTPS origins", () =>
     "https://archive.company.cn/",
   ])
     assert.throws(() => validateDeployment({ ...valid, APP_ORIGIN: origin }));
+});
+test("derives public application URL separately from the CSRF origin", () => {
+  const result = validateDeployment({
+    ...valid,
+    APP_BASE_PATH: "/wechat-article-archive/",
+  });
+  assert.equal(result.origin, valid.APP_ORIGIN);
+  assert.equal(result.basePath, "/wechat-article-archive");
+  assert.equal(
+    result.applicationUrl,
+    valid.APP_ORIGIN + "/wechat-article-archive/",
+  );
+  for (const path of ["relative", "//host", "/../api", "/a?x=1", "/%2F"])
+    assert.throws(() => validateDeployment({ ...valid, APP_BASE_PATH: path }));
 });
 test("rejects test scheduling, unsafe example egress and unexpected Compose targets", () => {
   for (const change of [

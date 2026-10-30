@@ -55,8 +55,9 @@ async function sessionFor(reply: any, userId: string) {
     "INSERT INTO sessions(id_hash,user_id,csrf,expires_at) VALUES($1,$2,$3,now()+interval '12 hours')",
     [hash(token), userId, csrf],
   );
+  if (config.basePath) reply.clearCookie("archive_session", { path: "/" });
   reply.setCookie("archive_session", token, {
-    path: "/",
+    path: config.basePath || "/",
     httpOnly: true,
     secure: config.production,
     sameSite: "strict",
@@ -221,7 +222,8 @@ export async function registerAuth(app: FastifyInstance) {
     await db.query("DELETE FROM sessions WHERE id_hash=$1", [
       req.session.id_hash,
     ]);
-    reply.clearCookie("archive_session", { path: "/" });
+    reply.clearCookie("archive_session", { path: config.basePath || "/" });
+    if (config.basePath) reply.clearCookie("archive_session", { path: "/" });
     return { ok: true };
   });
   app.post("/api/v1/auth/password", async (req) => {

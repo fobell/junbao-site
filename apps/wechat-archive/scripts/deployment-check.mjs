@@ -1,3 +1,4 @@
+import { normalizeBasePath, applicationUrl } from "../src/shared/base-path.mjs";
 import { readFileSync } from "node:fs";
 import { parseEnv } from "node:util";
 import { isIP } from "node:net";
@@ -6,6 +7,7 @@ import { pathToFileURL } from "node:url";
 
 export function validateDeployment(env) {
   const domain = env.DOMAIN ?? "";
+  const basePath = normalizeBasePath(env.APP_BASE_PATH ?? "");
   if (
     !/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$/.test(
       domain,
@@ -30,8 +32,15 @@ export function validateDeployment(env) {
     throw new Error("STORAGE_DRIVER 只能为 local 或 s3。");
   if (!["standalone", "tools"].includes(env.DEPLOYMENT_MODE ?? "standalone"))
     throw new Error("DEPLOYMENT_MODE must be standalone or tools.");
-  for (const name of ["WORKER_CONCURRENCY", "BROWSER_MAX_SESSIONS", "BROWSER_MAX_CONTEXTS"]) {
-    if (env[name] !== undefined && (!Number.isSafeInteger(Number(env[name])) || Number(env[name]) < 1))
+  for (const name of [
+    "WORKER_CONCURRENCY",
+    "BROWSER_MAX_SESSIONS",
+    "BROWSER_MAX_CONTEXTS",
+  ]) {
+    if (
+      env[name] !== undefined &&
+      (!Number.isSafeInteger(Number(env[name])) || Number(env[name]) < 1)
+    )
       throw new Error(`${name} must be a positive integer`);
   }
   const delay = Number(env.REQUEST_DELAY_MS ?? "3000");
@@ -90,6 +99,8 @@ export function validateDeployment(env) {
   return {
     domain,
     origin: env.APP_ORIGIN,
+    basePath,
+    applicationUrl: applicationUrl(env.APP_ORIGIN, basePath),
     storage: env.STORAGE_DRIVER ?? "local",
     egressIp,
   };
@@ -108,7 +119,9 @@ if (
     console.log(
       process.argv.includes("--origin")
         ? config.origin
-        : JSON.stringify(config, null, 2),
+        : process.argv.includes("--url")
+          ? config.applicationUrl
+          : JSON.stringify(config, null, 2),
     );
   } catch (e) {
     console.error(

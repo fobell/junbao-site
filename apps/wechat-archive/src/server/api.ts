@@ -16,6 +16,7 @@ import { OfficialApiAdapter, browserCall } from "./sources.js";
 import { validateUrl } from "./network.js";
 import { store } from "./storage.js";
 import { AppError } from "../shared/types.js";
+import { publicPreview } from "./public-content.js";
 import { openApiDocument } from "./openapi.js";
 const idOf = (req: any) => z.uuid().parse(req.params.id);
 const keyOf = (req: any) =>
@@ -47,6 +48,7 @@ export async function buildApp() {
           csrf: { type: "apiKey", in: "header", name: "X-CSRF-Token" },
         },
       },
+      servers: [{ url: config.origin + config.basePath }],
       security: [{ session: [] }],
     },
   });
@@ -473,7 +475,12 @@ export async function buildApp() {
         [a.id],
       )
     ).rows;
-    return { ...a, version: v, images, versions };
+    return {
+      ...a,
+      version: v ? { ...v, preview_html: publicPreview(v.preview_html) } : v,
+      images,
+      versions,
+    };
   });
   app.patch("/api/v1/articles/:id/tags", async (req) => {
     const a = await article(req);
@@ -674,12 +681,10 @@ export async function buildApp() {
   const web = resolve("dist/web");
   if (existsSync(web)) {
     await app.register(staticFiles, { root: web, prefix: "/" });
-    app.setNotFoundHandler((req, reply) =>
-      req.url.startsWith("/api/")
-        ? reply
-            .code(404)
-            .send({ error: { code: "NOT_FOUND", message: "接口不存在" } })
-        : reply.sendFile("index.html"),
+    app.setNotFoundHandler((_req, reply) =>
+      reply
+        .code(404)
+        .send({ error: { code: "NOT_FOUND", message: "页面或接口不存在" } }),
     );
   }
   return app;

@@ -1,6 +1,6 @@
 # API 使用约定
 
-基址 `/api/v1`，同域 Cookie 会话。除安装和登录外均要求登录；管理员必须先设置 TOTP，临时密码用户必须先改密码。GET `/auth/me` 返回用户与 `csrf`，修改请求携带 `X-CSRF-Token`，`Origin` 必须与 `APP_ORIGIN` 精确匹配。公开注册关闭。
+独立部署基址 `/api/v1`；tools.junbao.ai 的公开基址为 `/wechat-article-archive/api/v1`。动态 OpenAPI 的 `servers` 包含当前域名与基础路径。下表为相对基址的路径。同域 Cookie 会话。除安装和登录外均要求登录；管理员必须先设置 TOTP，临时密码用户必须先改密码。GET `/auth/me` 返回用户与 `csrf`，修改请求携带 `X-CSRF-Token`，`Origin` 必须与 `APP_ORIGIN` 精确匹配。公开注册关闭。
 
 失败统一 `{ "error": { "code": "…", "message": "…", "retryable": false }, "requestId": "…" }`，未授权 401、无权限 403、状态冲突 409。耗时任务返回 202 `{ "jobId": "uuid" }`，任务创建可带 `Idempotency-Key`（最长 100 字符）；相同用户同一键返回已有任务。
 

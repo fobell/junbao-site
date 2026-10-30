@@ -5113,6 +5113,11 @@
       }
     }
   },
+  "servers": [
+    {
+      "url": "https://tools.junbao.ai/wechat-article-archive"
+    }
+  ],
   "security": [
     {
       "session": []

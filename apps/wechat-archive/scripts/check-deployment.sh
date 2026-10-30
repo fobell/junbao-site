@@ -19,8 +19,8 @@ try {
 } finally { await pool.end(); }
 JS
 if [[ "${1:-}" != --internal-only ]]; then
-  origin="$(docker run --rm --network none -v "$PWD:/work:ro" -w /work node:24.22.2-bookworm-slim node scripts/deployment-check.mjs --origin)"
-  status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 30 "$origin/healthz")"
+  origin="$(docker run --rm --network none -v "$PWD:/work:ro" -w /work node:24.22.2-bookworm-slim node scripts/deployment-check.mjs --url)"
+  status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 30 "${origin%/}/healthz")"
   if [[ "$status" != 200 ]]; then
     printf '%s\n' "公网 HTTPS 返回 HTTP $status；检查 DNS / TLS / 安全组。如果已启用 Access，请在浏览器登录后核验。"
     exit 1

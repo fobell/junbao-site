@@ -1,7 +1,7 @@
 name: wechat-archive
 x-app: &app
   image: ${ARCHIVE_IMAGE:-wechat-archive:1.0.0}
-  build: { context: ., target: runtime }
+  build: { context: ., target: runtime, args: { APP_BASE_PATH: "${APP_BASE_PATH:-}" } }
   restart: unless-stopped
   env_file: .env
   environment: &env
@@ -71,7 +71,7 @@ services:
     stop_grace_period: 45s
   browser:
     image: ${BROWSER_IMAGE:-wechat-archive-browser:1.0.0}
-    build: { context: ., target: browser }
+    build: { context: ., target: browser, args: { APP_BASE_PATH: "${APP_BASE_PATH:-}" } }
     restart: unless-stopped
     init: true
     user: node

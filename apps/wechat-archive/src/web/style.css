@@ -1433,3 +1433,26 @@ code {
     z-index: 19;
   }
 }
+
+/* Shared tools directory navigation, including initialization and mobile drawer. */
+.tools-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  margin-bottom: 20px;
+  color: var(--muted, #64716b);
+  font-size: 14px;
+  text-decoration: none;
+}
+.tools-link:hover {
+  color: var(--accent, #18735c);
+  text-decoration: underline;
+}
+.tools-link:focus-visible {
+  outline: 2px solid #18735c;
+  outline-offset: 4px;
+}
+.sidebar > .tools-link {
+  margin: 0 0 16px;
+}

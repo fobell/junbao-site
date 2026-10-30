@@ -7,8 +7,22 @@ tools.junbao.ai {
     X-Content-Type-Options "nosniff"
     Referrer-Policy "no-referrer"
     X-Frame-Options "DENY"
-    Cache-Control "no-store, private"
     -Server
   }
-  reverse_proxy wechat-archive-api:3000
+  @archiveEntry path /wechat-article-archive
+  redir @archiveEntry /wechat-article-archive/?{query} 308
+  handle_path /wechat-article-archive/* {
+    header Cache-Control "no-store, private"
+    reverse_proxy wechat-archive-api:3000
+  }
+  handle {
+    root * /srv/junbao.ai/tools-hub/current
+    header {
+      Cache-Control "no-cache"
+      Content-Security-Policy "default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
+    }
+    @hubAssets path /hub-assets/*
+    header @hubAssets Cache-Control "public, max-age=3600"
+    file_server
+  }
 }
