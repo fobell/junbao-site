@@ -186,3 +186,8 @@
 @media (max-width:370px){.nav{gap:12px!important}.lang button{padding:6px 9px!important}}
 .top .logo-mark{display:none;width:24px;height:24px}
 @media (max-width:400px){.top .logo-full{display:none}.top .logo-mark{display:block}}
+
+/* nav: course link (short label on phones) */
+.nav .nav-course .cs{display:none}
+@media (max-width:600px){.nav .nav-course .cl{display:none}.nav .nav-course .cs{display:inline}}
+@media (max-width:360px){.nav{gap:10px!important}}
