@@ -56,8 +56,10 @@ for d in src server shared public scripts tests docs assets; do
   [ -d "$SRC/$d" ] && { mkdir -p "$APP/$d"; cp -a "$SRC/$d/." "$APP/$d/"; }
 done
 # remove source files that no longer exist upstream (only inside code folders)
-for d in src server shared tests; do
+for d in src server shared tests public/resources; do
+  [ -d "$APP/$d" ] || continue
   (cd "$APP/$d" && find . -type f) | while read -r f; do [ -e "$SRC/$d/$f" ] || rm -f "$APP/$d/$f"; done
+  find "$APP/$d" -mindepth 1 -type d -empty -delete
 done
 for f in package.json package-lock.json index.html tsconfig.json vite.config.ts playwright.config.ts README.md PROJECT_DOCUMENTATION.md metadata.json .dockerignore .gitignore .env.example deploy/sites.Caddyfile deploy/server-update.sh deploy/junbao-backup.service deploy/junbao-backup.timer; do
   [ -f "$SRC/$f" ] && { mkdir -p "$APP/$(dirname "$f")"; cp -a "$SRC/$f" "$APP/$f"; }
