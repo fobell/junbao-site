@@ -94,6 +94,8 @@ else
 fi
 
 say "5/5 build and restart the app"
+# lets anyone check which version is live: https://prompt.junbao.ai/version.json
+printf '{"rev":"%s","builtAt":"%s"}\n' "$REV" "$(date -u +%FT%TZ)" > "$APP/public/version.json"
 build(){ docker compose build "$@" app; }
 build || { echo "Docker Hub slow? retrying with the AWS public mirror"; build --build-arg NODE_IMAGE=public.ecr.aws/docker/library/node:22-bookworm-slim; }
 docker compose up -d app
@@ -108,6 +110,10 @@ if [ "${RELOAD_CADDY:-}" = 1 ]; then
   docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile || { cat "$BAK" > "$CF"; docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile; die "Caddy reload failed; Caddyfile restored"; }
   echo "caddy reloaded"
 fi
+
+# keep only the 3 newest rollback images
+docker images --format '{{.CreatedAt}}\t{{.Repository}}:{{.Tag}}' | grep -F 'junbao-prompt-app:before-' | sort -r | tail -n +4 | cut -f2 | xargs -r docker rmi >/dev/null 2>&1 || true
+docker image prune -f >/dev/null 2>&1 || true
 
 echo
 sleep 3

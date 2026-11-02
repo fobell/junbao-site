@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Runs from cron every 2 minutes (installed by server/install-autodeploy.sh).
+# When fobell/junbao-prompt main has a commit that hasn't been tried yet, runs update-prompt.sh
+# (backup → copy code → rebuild → health check). A failed build leaves the old version running and
+# is not retried until the next push. Manual run: sudo bash /opt/junbao-site/server/autodeploy-prompt --force
+set -uo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+REPO=git@github.com:fobell/junbao-prompt.git
+KEY=/root/.ssh/junbao_prompt_deploy
+STATE=/var/lib/junbao-autodeploy
+LOG=/var/log/junbao-prompt-deploy.log
+SCRIPT=/opt/junbao-site/server/update-prompt.sh
+mkdir -p "$STATE"
+exec 9>"$STATE/lock"; flock -n 9 || exit 0          # one deploy at a time
+
+export GIT_SSH_COMMAND="ssh -i $KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20"
+REMOTE=$(timeout 60 git ls-remote "$REPO" refs/heads/main 2>/dev/null | cut -f1)
+[ -n "$REMOTE" ] || exit 0                           # GitHub unreachable: try again next time
+if [ "$REMOTE" = "$(cat "$STATE/attempted" 2>/dev/null)" ] && [ "${1:-}" != "--force" ]; then exit 0; fi
+
+# Public status (no logs, no secrets): written next to the junbao.ai pages so it can be checked remotely.
+WEB=$(cat /etc/junbao-sync.conf 2>/dev/null || true)
+status(){ [ -n "$WEB" ] && [ -d "$WEB" ] && printf '{"app":"junbao-prompt","rev":"%s","result":"%s","at":"%s"}\n' "${REMOTE:0:7}" "$1" "$(date -u +%FT%TZ)" > "$WEB/deploy-status.json"; }
+
+echo "$REMOTE" > "$STATE/attempted"
+status running
+{ echo; echo "===== $(date '+%F %T') auto-deploy ${REMOTE:0:7}"; } >> "$LOG"
+if timeout 45m bash "$SCRIPT" >> "$LOG" 2>&1; then
+  status ok; echo "===== $(date '+%F %T') ok" >> "$LOG"
+else
+  status failed; echo "===== $(date '+%F %T') FAILED (old version still running)" >> "$LOG"
+fi
+# keep the log small
+tail -n 4000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
