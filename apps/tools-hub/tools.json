@@ -8,5 +8,15 @@
     "icon": "archive.svg",
     "access": "需要登录",
     "order": 10
+  },
+  {
+    "id": "checkin",
+    "name": "扫码签到",
+    "category": "活动现场签到",
+    "description": "微信扫一扫打开即可签到，无需登录或授权。输入姓名后，名单实时显示签到顺序和时间，可投到大屏。",
+    "url": "/checkin/",
+    "icon": "checkin.svg",
+    "access": "无需登录",
+    "order": 20
   }
 ]

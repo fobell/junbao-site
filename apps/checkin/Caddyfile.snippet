@@ -1,0 +1,7 @@
+  # 扫码签到 — paste inside the existing tools.junbao.ai { … } block, ABOVE the final `handle {` (the hub).
+  @checkinEntry path /checkin
+  redir @checkinEntry /checkin/ 308
+  handle_path /checkin/* {
+    header Cache-Control "no-store"
+    reverse_proxy checkin-app:3000
+  }

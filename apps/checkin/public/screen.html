@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B0B0D">
+<title>签到大屏 · 钧宝工具箱</title>
+<link rel="icon" href="icon.svg">
+<style>
+/* Projector view: the QR code on the left, the live list on the right. */
+:root{color-scheme:dark;--bg:#0B0B0D;--bg-2:#141417;--line:rgba(241,236,227,.12);--fg:#F1ECE3;--fg-2:#CFC9BE;--mute:#A49E93;--ai:#7CC8D8;--on:#0B0B0D;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong",serif;--sans:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace;--ease:cubic-bezier(.2,.7,.2,1)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(50% 70% at 15% 30%,rgba(124,200,216,.16),transparent 70%),radial-gradient(40% 60% at 100% 100%,rgba(227,160,74,.08),transparent 60%)}
+.stage{height:100%;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:4vw;padding:5vh 4vw}
+.left{display:flex;flex-direction:column;justify-content:center;gap:3vh}
+.tag{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:clamp(12px,1.1vw,18px);letter-spacing:.2em;color:var(--ai)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ai);animation:ping 2.4s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(124,200,216,.6)}70%,100%{box-shadow:0 0 0 14px rgba(124,200,216,0)}}
+h1{margin:0;font-family:var(--serif);font-weight:900;font-size:clamp(36px,4.6vw,96px);line-height:1.12;word-break:keep-all}
+.qr{position:relative;width:min(36vh,30vw);aspect-ratio:1;padding:2.2%;border-radius:22px;background:#fff;box-shadow:0 0 0 1px var(--line),0 30px 90px -30px rgba(124,200,216,.6)}
+.qr img{width:100%;height:100%;display:block}
+.qr::before{content:"";position:absolute;inset:-12px;border-radius:30px;border:2px solid var(--ai);opacity:.5;animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{inset:-20px;opacity:.15}}
+.hint{font-size:clamp(16px,1.6vw,28px);color:var(--fg-2)}
+.hint b{color:var(--fg)}
+.url{font-family:var(--mono);font-size:clamp(12px,1vw,18px);color:var(--mute)}
+.right{display:flex;flex-direction:column;min-height:0;border-radius:24px;border:1px solid var(--line);background:rgba(20,20,23,.7);overflow:hidden}
+.rh{display:flex;align-items:flex-end;justify-content:space-between;padding:3vh 2.4vw 2vh;border-bottom:1px solid var(--line)}
+.rh>span{font-size:clamp(14px,1.3vw,22px);color:var(--fg-2)}
+.big{font-family:var(--serif);font-weight:900;font-size:clamp(56px,7vw,140px);line-height:.9;color:var(--ai);font-variant-numeric:tabular-nums}
+.big small{font-family:var(--sans);font-weight:400;font-size:.22em;color:var(--mute);margin-left:.3em}
+ol{list-style:none;margin:0;padding:1vh 2.4vw;overflow:hidden;flex:1;display:grid;grid-template-columns:repeat(var(--cols,1),minmax(0,1fr));grid-auto-rows:min-content;column-gap:2.4vw;align-content:start;-webkit-mask-image:linear-gradient(#000 82%,transparent);mask-image:linear-gradient(#000 82%,transparent)}
+li{display:grid;grid-template-columns:3.4em minmax(0,1fr) auto;align-items:center;gap:1vw;padding:1.3vh 0;border-bottom:1px solid var(--line);font-size:clamp(16px,1.6vw,30px)}
+li .n{font-family:var(--mono);font-size:.62em;color:var(--mute)}
+li .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+li .t{font-family:var(--mono);font-size:.62em;color:var(--fg-2)}
+li.new{animation:in 1s var(--ease) both}
+li.new .nm{animation:hl 6s ease both}
+@keyframes hl{0%,40%{color:var(--ai)}100%{color:var(--fg)}}
+@keyframes in{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:none}}
+.toast{position:fixed;left:50%;bottom:6vh;transform:translate(-50%,40px);opacity:0;padding:1.6vh 2.6vw;border-radius:999px;background:var(--ai);color:var(--on);font-size:clamp(18px,2vw,34px);font-weight:700;box-shadow:0 20px 60px -10px rgba(124,200,216,.7);transition:transform .6s var(--ease),opacity .6s}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.empty{padding:6vh 0;text-align:center;color:var(--mute);font-size:clamp(16px,1.4vw,24px)}
+@media (max-aspect-ratio:1/1){body{overflow:auto}.stage{grid-template-columns:1fr;height:auto}.qr{width:min(70vw,420px)}}
+</style>
+</head>
+<body>
+<main class="stage">
+  <section class="left">
+    <div class="tag"><span class="dot" aria-hidden="true"></span>SCAN TO CHECK IN · 扫码签到</div>
+    <h1 id="title">现场签到</h1>
+    <div class="qr"><img src="qr.svg" alt="签到二维码：tools.junbao.ai/checkin/"></div>
+    <p class="hint">微信<b>扫一扫</b>，输入姓名即完成签到</p>
+    <p class="url">tools.junbao.ai/checkin/</p>
+  </section>
+  <section class="right" aria-label="签到名单">
+    <div class="rh"><span>已签到</span><div class="big"><span id="count">0</span><small>人</small></div></div>
+    <ol id="list"></ol>
+    <p class="empty" id="empty">等待第一位签到…</p>
+  </section>
+</main>
+<div class="toast" id="toast" aria-live="polite"></div>
+<script>
+(function(){
+  var list=document.getElementById('list'),ver='',first=true,started=null,toastT;
+  function tm(t){return new Date(t).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}
+  function fit(){var n=list.children.length,h=list.clientHeight,row=list.firstChild?list.firstChild.offsetHeight:60,per=Math.max(1,Math.floor(h/row));list.style.setProperty('--cols',n>per?2:1)}
+  function render(d){
+    document.getElementById('title').textContent=d.title;document.getElementById('count').textContent=d.count;document.getElementById('empty').hidden=d.count>0;
+    if(started!==d.startedAt){list.textContent='';started=d.startedAt}
+    var have={};Array.prototype.forEach.call(list.children,function(li){have[li.dataset.n]=li});
+    var keep={};d.items.forEach(function(i){keep[i.n]=1});
+    Object.keys(have).forEach(function(n){if(!keep[n])have[n].remove()});
+    var fresh=[];
+    d.items.forEach(function(i){if(have[i.n])return;var li=document.createElement('li');li.dataset.n=i.n;
+      li.innerHTML='<span class="n"></span><span class="nm"></span><span class="t"></span>';
+      li.children[0].textContent='#'+(i.n<10?'0':'')+i.n;li.children[1].textContent=i.name;li.children[2].textContent=tm(i.t);
+      if(!first){li.className='new';fresh.push(i)}list.insertBefore(li,list.firstChild)});
+    /* keep what fits: newest first */
+    fit();
+    if(fresh.length){var t=document.getElementById('toast');t.textContent='欢迎 '+fresh[fresh.length-1].name+' · 第 '+fresh[fresh.length-1].n+' 位';t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},3200)}
+    first=false;
+  }
+  (function poll(){fetch('api/list?v='+ver,{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){if(!d.same){ver=d.version;render(d)}}).catch(function(){}).then(function(){setTimeout(poll,2500)})})();
+  addEventListener('resize',fit);
+})();
+</script>
+</body>
+</html>

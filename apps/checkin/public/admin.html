@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0B0D">
+<title>签到管理 · 钧宝工具箱</title>
+<link rel="icon" href="icon.svg">
+<style>
+:root{color-scheme:dark;--bg:#0B0B0D;--bg-2:#141417;--line:rgba(241,236,227,.12);--line-2:rgba(241,236,227,.24);--fg:#F1ECE3;--fg-2:#CFC9BE;--mute:#A49E93;--ai:#7CC8D8;--err:#F08C7E;--on:#0B0B0D;
+  --serif:"Noto Serif SC","Songti SC",serif;--sans:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:28px max(20px,env(safe-area-inset-left)) 60px}
+h1{margin:0;font-family:var(--serif);font-weight:900;font-size:32px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ai)}
+.box{margin-top:18px;padding:18px;border-radius:16px;border:1px solid var(--line);background:var(--bg-2)}
+.box h2{margin:0 0 10px;font-size:15px;color:var(--fg-2);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+input{flex:1;min-width:180px;height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg);color:var(--fg);font:inherit;font-size:16px;outline:none}
+input:focus{border-color:var(--ai)}
+button,.btn{height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--line-2);background:none;color:var(--fg);font:inherit;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+.pri{background:var(--ai);border-color:var(--ai);color:var(--on);font-weight:700}
+.danger{border-color:rgba(240,140,126,.6);color:var(--err)}
+.msg{min-height:22px;margin:8px 0 0;font-size:14px;color:var(--mute)}
+.msg.err{color:var(--err)}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.links a{color:var(--ai)}
+table{width:100%;border-collapse:collapse;margin-top:6px}
+td,th{padding:10px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:13px;color:var(--mute);font-weight:500}
+td.n,td.t{font-family:var(--mono);font-size:13px;color:var(--fg-2);white-space:nowrap}
+td.x{text-align:right}
+td.x button{height:34px;padding:0 12px;font-size:13px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">CHECK-IN · ADMIN</div>
+  <h1>签到管理</h1>
+  <div class="links"><a href="./" target="_blank" rel="noopener">签到页 ↗</a><a href="screen" target="_blank" rel="noopener">大屏 ↗</a><a href="qr.svg" download="checkin-qr.svg">下载二维码</a></div>
+
+  <section class="box" id="login">
+    <h2>输入管理口令</h2>
+    <form class="row" id="lf"><input id="tok" type="password" autocomplete="current-password" placeholder="管理口令"><button class="pri" type="submit">进入</button></form>
+    <p class="msg" id="lm"></p>
+  </section>
+
+  <div id="panel" hidden>
+    <section class="box">
+      <h2>活动名称（显示在签到页和大屏上）</h2>
+      <form class="row" id="tf"><input id="title" maxlength="40"><button class="pri" type="submit">保存</button></form>
+      <p class="msg" id="tm"></p>
+    </section>
+    <section class="box">
+      <h2>名单 · <span id="cnt">0</span> 人</h2>
+      <div class="row"><button type="button" id="csv">导出 CSV</button><button type="button" class="danger" id="reset">清空，开始新一场</button></div>
+      <p class="msg" id="rm"></p>
+      <table><thead><tr><th>序号</th><th>姓名</th><th>时间</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+    </section>
+  </div>
+</div>
+<script>
+(function(){
+  var token='';try{token=sessionStorage.getItem('jb-checkin-admin')||''}catch(e){}
+  function $(id){return document.getElementById(id)}
+  function say(el,t,err){el.textContent=t||'';el.className='msg'+(err?' err':'')}
+  function api(path,data){return fetch('api/admin/'+path,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Token':token},body:JSON.stringify(data||{})}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||'操作失败');return d})})}
+  function tm(t){return new Date(t).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}
+  function render(d){
+    if(document.activeElement!==$('title'))$('title').value=d.title;
+    $('cnt').textContent=d.count;var tb=$('rows');tb.textContent='';
+    d.items.slice().reverse().forEach(function(i){var tr=document.createElement('tr');
+      tr.innerHTML='<td class="n"></td><td></td><td class="t"></td><td class="x"><button type="button">删除</button></td>';
+      tr.children[0].textContent='#'+i.n;tr.children[1].textContent=i.name;tr.children[2].textContent=tm(i.t);
+      tr.querySelector('button').addEventListener('click',function(){if(!confirm('删除「'+i.name+'」的签到？'))return;api('delete',{n:i.n}).then(render).catch(function(e){say($('rm'),e.message,1)})});
+      tb.appendChild(tr)});
+  }
+  function refresh(){fetch('api/list',{cache:'no-store'}).then(function(r){return r.json()}).then(render)}
+  function enter(){api('check').then(function(){try{sessionStorage.setItem('jb-checkin-admin',token)}catch(e){}$('login').hidden=true;$('panel').hidden=false;refresh();setInterval(refresh,5000)}).catch(function(e){say($('lm'),e.message,1)})}
+  $('lf').addEventListener('submit',function(e){e.preventDefault();token=$('tok').value.trim();enter()});
+  if(token)enter();
+  $('tf').addEventListener('submit',function(e){e.preventDefault();api('title',{title:$('title').value}).then(function(d){render(d);say($('tm'),'已保存')}).catch(function(e){say($('tm'),e.message,1)})});
+  $('reset').addEventListener('click',function(){if(!confirm('清空全部签到记录？建议先导出 CSV。此操作不能撤销。'))return;api('reset').then(function(d){render(d);say($('rm'),'已清空，可以开始新一场。')}).catch(function(e){say($('rm'),e.message,1)})});
+  $('csv').addEventListener('click',function(){fetch('api/admin/export.csv',{headers:{'X-Admin-Token':token}}).then(function(r){if(!r.ok)throw new Error('导出失败');return r.blob()}).then(function(b){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='checkin-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove()}).catch(function(e){say($('rm'),e.message,1)})});
+})();
+</script>
+</body>
+</html>

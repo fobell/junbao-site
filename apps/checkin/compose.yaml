@@ -1,0 +1,35 @@
+# 扫码签到 · runs behind the existing Caddy on the junbao-prompt_default network as checkin-app:3000.
+name: junbao-checkin
+services:
+  app:
+    image: node:22-alpine
+    command: ["node", "/app/server.mjs"]
+    working_dir: /app
+    user: "1000:1000"
+    read_only: true
+    environment:
+      DATA_DIR: /data
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?set ADMIN_TOKEN in .env}
+      CHECKIN_TITLE: ${CHECKIN_TITLE:-现场签到}
+    volumes:
+      - ./server.mjs:/app/server.mjs:ro
+      - ./public:/app/public:ro
+      - ./data:/data
+    networks:
+      proxy:
+        aliases: [checkin-app]
+    restart: unless-stopped
+    mem_limit: 96m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging: { driver: json-file, options: { max-size: 5m, max-file: "3" } }
+networks:
+  proxy:
+    external: true
+    name: junbao-prompt_default

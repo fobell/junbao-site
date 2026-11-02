@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0D">
+<meta name="format-detection" content="telephone=no">
+<title>扫码签到 · 钧宝工具箱</title>
+<link rel="icon" href="icon.svg">
+<style>
+/* Mobile-first check-in. Opens inside WeChat's browser, so no external fonts or scripts. */
+:root{color-scheme:dark;--bg:#0B0B0D;--bg-2:#141417;--bg-3:#1C1C20;--line:rgba(241,236,227,.12);--line-2:rgba(241,236,227,.24);--fg:#F1ECE3;--fg-2:#CFC9BE;--mute:#A49E93;--ai:#7CC8D8;--ok:#8FD6A6;--err:#F08C7E;--on:#0B0B0D;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong",serif;--sans:"PingFang SC","Noto Sans SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace;--ease:cubic-bezier(.2,.7,.2,1)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100svh;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:60vh;z-index:-1;background:radial-gradient(80% 70% at 80% 0%,rgba(124,200,216,.18),transparent 70%)}
+.wrap{max-width:560px;margin:0 auto;padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+.brand{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--mute)}
+.brand b{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--ai)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ai);animation:ping 2.4s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(124,200,216,.6)}70%,100%{box-shadow:0 0 0 9px rgba(124,200,216,0)}}
+h1{margin:22px 0 0;font-family:var(--serif);font-weight:900;font-size:clamp(34px,10vw,48px);line-height:1.15;letter-spacing:.02em;word-break:keep-all;overflow-wrap:break-word}
+.sub{margin:8px 0 0;color:var(--fg-2);font-size:15px}
+.card{margin-top:24px;padding:20px;border-radius:20px;border:1px solid var(--line-2);background:linear-gradient(160deg,rgba(124,200,216,.08),transparent 60%),var(--bg-2)}
+label{display:block;font-size:14px;color:var(--fg-2);margin-bottom:10px}
+.field{display:flex;gap:10px}
+input{flex:1;min-width:0;height:54px;padding:0 16px;border-radius:14px;border:1px solid var(--line-2);background:var(--bg);color:var(--fg);font:inherit;font-size:18px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+input::placeholder{color:#6f6a62}
+input:focus{border-color:var(--ai);box-shadow:0 0 0 4px rgba(124,200,216,.18)}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.go{flex:none;height:54px;padding:0 22px;border:0;border-radius:14px;background:var(--ai);color:var(--on);font-size:17px;font-weight:700;transition:transform .15s,background .2s}
+.go:active{transform:scale(.97)}
+.go[disabled]{opacity:.6;cursor:default}
+.msg{min-height:22px;margin:10px 0 0;font-size:14px;color:var(--err)}
+.done{display:none;text-align:center;padding:8px 0 4px}
+.card.ok .form{display:none}.card.ok .done{display:block}
+.ring{position:relative;width:132px;height:132px;margin:4px auto 0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(124,200,216,.18),transparent 70%);border:2px solid var(--ai);animation:pop .6s var(--ease) both}
+.ring::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--ai);animation:wave 1.6s var(--ease) .2s 2 both}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes wave{from{transform:scale(1);opacity:.8}to{transform:scale(1.6);opacity:0}}
+.ring small{font-size:13px;color:var(--fg-2)}
+.ring b{font-family:var(--serif);font-weight:900;font-size:52px;line-height:1;color:var(--fg)}
+.done h2{margin:16px 0 0;font-size:22px}
+.done p{margin:4px 0 0;color:var(--fg-2);font-size:15px}
+.again{margin-top:14px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line-2);background:none;color:var(--fg-2);font-size:14px}
+.list-head{display:flex;align-items:baseline;justify-content:space-between;margin:34px 0 10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.list-head h2{margin:0;font-size:15px;font-weight:600;color:var(--fg-2)}
+.count{font-family:var(--serif);font-weight:900;font-size:30px;color:var(--ai);line-height:1}
+.count small{font-family:var(--sans);font-weight:400;font-size:13px;color:var(--mute);margin-left:4px}
+ol{list-style:none;margin:0;padding:0}
+li{display:grid;grid-template-columns:3.2em minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line)}
+li .n{font-family:var(--mono);font-size:13px;color:var(--mute)}
+li .nm{font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+li .t{font-family:var(--mono);font-size:13px;color:var(--fg-2);font-variant-numeric:tabular-nums}
+li.new{animation:slide .7s var(--ease) both;background:linear-gradient(90deg,rgba(124,200,216,.14),transparent 70%)}
+li.me .nm::after{content:"我";margin-left:8px;padding:1px 7px;border-radius:999px;background:var(--ai);color:var(--on);font-size:11px;font-weight:700;vertical-align:2px}
+@keyframes slide{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.empty{padding:28px 0;text-align:center;color:var(--mute);font-size:14px}
+footer{margin-top:28px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#6f6a62}
+footer a{color:inherit}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><b><span class="dot" aria-hidden="true"></span>CHECK-IN</b><span id="clock">--:--:--</span></div>
+  <h1 id="title">现场签到</h1>
+  <p class="sub">输入姓名完成签到，下方实时显示签到顺序和时间。</p>
+
+  <section class="card" id="card" aria-live="polite">
+    <form class="form" id="form" novalidate>
+      <label for="name">你的姓名</label>
+      <div class="field">
+        <input id="name" name="name" autocomplete="name" maxlength="20" placeholder="例如：张三" enterkeyhint="done" required>
+        <button class="go" id="go" type="submit">签到</button>
+      </div>
+      <p class="msg" id="msg" role="alert"></p>
+    </form>
+    <div class="done">
+      <div class="ring"><small>第</small><b id="myN">1</b><small>位</small></div>
+      <h2 id="myName"></h2>
+      <p>签到成功 · <span id="myT"></span></p>
+      <button class="again" id="again" type="button">帮其他人签到</button>
+    </div>
+  </section>
+
+  <div class="list-head"><h2>签到名单</h2><span class="count"><span id="count">0</span><small>人</small></span></div>
+  <ol id="list" aria-label="签到名单，最新在上"></ol>
+  <p class="empty" id="empty">还没有人签到，你来做第一位。</p>
+
+  <footer><a href="/">tools.junbao.ai</a></footer>
+</div>
+<script>
+(function(){
+  var KEY='jb-checkin-me',list=document.getElementById('list'),card=document.getElementById('card'),form=document.getElementById('form'),input=document.getElementById('name'),go=document.getElementById('go'),msg=document.getElementById('msg');
+  var ver='',seen={},first=true,started=null,mine=[];
+  function tm(t){return new Date(t).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}
+  function load(){try{var m=JSON.parse(localStorage.getItem(KEY)||'null');if(m&&m.startedAt)return m}catch(e){}return null}
+  function store(m){try{localStorage.setItem(KEY,JSON.stringify(m))}catch(e){}}
+  function showMine(it){document.getElementById('myN').textContent=it.n;document.getElementById('myName').textContent=it.name;document.getElementById('myT').textContent=tm(it.t);card.classList.add('ok')}
+  function render(d){
+    document.getElementById('title').textContent=d.title;document.title=d.title+' · 扫码签到';
+    document.getElementById('count').textContent=d.count;
+    document.getElementById('empty').hidden=d.count>0;
+    var me=load();
+    if(started!==null&&started!==d.startedAt){seen={};list.textContent=''}
+    started=d.startedAt;
+    mine=me&&me.startedAt===d.startedAt?me.ns:[];
+    if(!(me&&me.startedAt===d.startedAt))card.classList.remove('ok');
+    var keep={};d.items.forEach(function(i){keep[i.n]=1});
+    Array.prototype.slice.call(list.children).forEach(function(li){if(!keep[li.dataset.n]){li.remove();delete seen[li.dataset.n]}});
+    d.items.forEach(function(i){
+      if(seen[i.n])return;seen[i.n]=1;
+      var li=document.createElement('li');li.dataset.n=i.n;
+      var n=document.createElement('span');n.className='n';n.textContent='#'+(i.n<10?'0':'')+i.n;
+      var nm=document.createElement('span');nm.className='nm';nm.textContent=i.name;
+      var t=document.createElement('span');t.className='t';t.textContent=tm(i.t);
+      li.appendChild(n);li.appendChild(nm);li.appendChild(t);
+      if(!first)li.className='new';
+      list.insertBefore(li,list.firstChild);
+    });
+    Array.prototype.forEach.call(list.children,function(li){li.classList.toggle('me',mine.indexOf(+li.dataset.n)>-1)});
+    first=false;
+  }
+  function poll(){
+    fetch('api/list?v='+ver,{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){if(!d.same){ver=d.version;render(d)}}).catch(function(){}).then(function(){setTimeout(poll,document.hidden?15000:3000)});
+  }
+  form.addEventListener('submit',function(e){
+    e.preventDefault();var name=input.value.trim();msg.textContent='';
+    if(!name){msg.textContent='请填写姓名。';input.focus();return}
+    go.disabled=true;go.textContent='签到中…';
+    fetch('api/checkin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name})})
+      .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
+      .then(function(x){
+        if(!x.ok){msg.textContent=x.d.error||'签到失败，请重试。';return}
+        var me=load();if(!me||me.startedAt!==started)me={startedAt:started,ns:[]};me.ns.push(x.d.item.n);store(me);
+        input.value='';showMine(x.d.item);ver='';fetch('api/list',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){ver=d.version;render(d)});
+        if(navigator.vibrate)navigator.vibrate(30);
+      })
+      .catch(function(){msg.textContent='网络不太好，请再点一次。'})
+      .then(function(){go.disabled=false;go.textContent='签到'});
+  });
+  document.getElementById('again').addEventListener('click',function(){card.classList.remove('ok');input.focus()});
+  /* returning visitor: show their own result */
+  fetch('api/list',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){ver=d.version;render(d);var me=load();if(me&&me.startedAt===d.startedAt&&me.ns.length){var last=me.ns[me.ns.length-1];d.items.forEach(function(i){if(i.n===last)showMine(i)})}}).catch(function(){}).then(function(){setTimeout(poll,3000)});
+  var ck=document.getElementById('clock');(function tick(){ck.textContent=tm(Date.now());setTimeout(tick,1000)})();
+})();
+</script>
+</body>
+</html>
