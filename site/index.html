@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://junbao.ai/">
 <meta property="og:title" content="钧宝 JUNBAO · 一边拍电影，一边造 AI">
-<meta property="og:description" content="前 IBM 高级软件工程师，金鸡奖获奖电影出品人，国际获奖短片导演，AI 影像创作者与开发者。">
+<meta property="og:description" content="前 IBM 高级软件工程师，金鸡奖提名电影出品人，国际获奖短片导演，AI 影像创作者与开发者。">
 <meta property="og:image" content="https://junbao.ai/img/og.jpg">
 <title>钧宝 JUNBAO</title>
 
@@ -323,6 +323,8 @@ footer img{width:20px;height:20px}
   .term-body .hid{opacity:1;transform:none}
   html{scroll-behavior:auto}
 }
+/* Award status stays readable alongside each existing award title. */
+.badge .award-nomination,.track .award-nomination,.award .award-nomination,.hon-prize .award-nomination{display:inline-block;font:inherit;font-size:max(12px,.6em);font-weight:500;line-height:1.25;letter-spacing:normal;color:var(--film);margin-inline-start:.4em;white-space:nowrap;vertical-align:baseline}
 </style>
 <link rel="stylesheet" href="works.css">
 
@@ -363,8 +365,8 @@ footer img{width:20px;height:20px}
         <span class="en"><span class="ln split" data-d="100">I make <span class="film-word">films</span>.</span><span class="ln split" data-d="420">I build <span class="ai-word">AI</span>.</span></span>
       </h1>
       <p class="lede">
-        <span class="zh">我是<strong>钧宝（樊福宝）</strong>。前 IBM 高级软件工程师，<span class="nw">金鸡奖</span>获奖电影出品人，国际获奖短片导演。电影和 AI，两条线我同时在跑。</span>
-        <span class="en">I'm <strong>Junbao (Fan Fubao)</strong>: former IBM senior software engineer, producer of a Golden Rooster–winning feature, and an internationally awarded short-film director. Film and AI are two tracks I run at the same time.</span>
+        <span class="zh">我是<strong>钧宝（樊福宝）</strong>。前 IBM 高级软件工程师，<span class="nw">金鸡奖</span>提名电影出品人，国际获奖短片导演。电影和 AI，两条线我同时在跑。</span>
+        <span class="en">I'm <strong>Junbao (Fan Fubao)</strong>: former IBM senior software engineer, producer of a Golden Rooster–nominated feature, and an internationally awarded short-film director. Film and AI are two tracks I run at the same time.</span>
       </p>
       <div class="roles" aria-live="off">&gt; <span class="zh">身份</span><span class="en">role</span>: <b id="role">出品人</b><i class="caret" aria-hidden="true"></i></div>
       <div class="cta">
@@ -374,7 +376,7 @@ footer img{width:20px;height:20px}
       <div class="badges">
         <div class="badge">
           <img src="img/gr-trophy-s.png" alt="金鸡奖杯" width="26" height="38" style="width:26px;height:auto">
-          <div><small class="zh">第39届中国电影金鸡奖</small><small class="en">39th Golden Rooster Awards</small><b class="zh">《永不孤行》最佳儿童片</b><b class="en">Never Walk Alone · Best Children's Film</b></div>
+          <div><small class="zh">第39届中国电影金鸡奖</small><small class="en">39th Golden Rooster Awards</small><b class="zh">《永不孤行》最佳儿童片<small class="award-nomination">提名</small></b><b class="en">Never Walk Alone · Best Children's Film<small class="award-nomination">Nominee</small></b></div>
         </div>
         <div class="badge">
           <svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M17 40c-7-4-11-12-9-22"/><path d="M31 40c7-4 11-12 9-22"/><path d="M12 32c-4 0-6-2-7-5 3 0 6 1 7 5z"/><path d="M10 24c-3-1-5-4-5-7 3 1 5 3 5 7z"/><path d="M36 32c4 0 6-2 7-5-3 0-6 1-7 5z"/><path d="M38 24c3-1 5-4 5-7-3 1-5 3-5 7z"/></svg>
@@ -409,7 +411,7 @@ footer img{width:20px;height:20px}
         <div class="eyebrow t-film"><span class="dot"></span>TRACK A · FILM</div>
         <div class="big"><span class="zh">电影</span><span class="en">Film</span></div>
         <ul>
-          <li><b><span class="zh">《永不孤行》</span><span class="en">Never Walk Alone</span></b><span class="zh">出品人 · 总监制 · <span class="nw">金鸡奖最佳儿童片</span></span><span class="en">Producer · Executive Producer · Golden Rooster Best Children's Film</span></li>
+          <li><b><span class="zh">《永不孤行》</span><span class="en">Never Walk Alone</span></b><span class="zh">出品人 · 总监制 · <span class="nw">金鸡奖最佳儿童片<small class="award-nomination">提名</small></span></span><span class="en">Producer · Executive Producer · Golden Rooster Best Children's Film<small class="award-nomination">Nominee</small></span></li>
           <li><b><span class="zh">短片《球》</span><span class="en">The Ball</span></b><span class="zh">编剧 · 导演 · 休斯顿国际电影节雷米奖</span><span class="en">Writer · Director · Remi Award, Houston</span></li>
           <li><b><span class="zh">网剧《仙人之上》</span><span class="en">Above the Immortals</span></b><span class="zh">出品人 · 总监制</span><span class="en">Producer · Executive Producer</span></li>
         </ul>
@@ -475,7 +477,7 @@ footer img{width:20px;height:20px}
         <div class="awards">
           <div class="award top-award">
             <img class="aw-logo" src="img/gr-trophy-s.png" alt="金鸡奖杯" width="34" height="49">
-            <div><small class="zh">第39届中国电影金鸡奖</small><small class="en">39th China Golden Rooster Awards</small><b class="zh">最佳儿童片</b><b class="en">Best Children's Film</b></div>
+            <div><small class="zh">第39届中国电影金鸡奖</small><small class="en">39th China Golden Rooster Awards</small><b class="zh">最佳儿童片<small class="award-nomination">提名</small></b><b class="en">Best Children's Film<small class="award-nomination">Nominee</small></b></div>
           </div>
           <div class="award">
             <img class="aw-logo" src="img/sr-13th.png" alt="第十三届丝绸之路国际电影节标志" width="44" height="53">
@@ -495,7 +497,7 @@ footer img{width:20px;height:20px}
       <div class="hon gr rise">
         <div class="hon-copy">
           <img class="gr-text" src="img/gr-text.png" alt="第39届中国电影金鸡奖 The 39th China Film Golden Rooster Awards" width="262" height="213" loading="lazy">
-          <div class="hon-prize"><span class="zh">最佳儿童片</span><span class="en">Best Children's Film</span></div>
+          <div class="hon-prize"><span class="zh">最佳儿童片<small class="award-nomination">提名</small></span><span class="en">Best Children's Film<small class="award-nomination">Nominee</small></span></div>
           <div class="hon-work"><span class="zh">《永不孤行》· 出品人 / 总监制</span><span class="en">Never Walk Alone · Producer / Executive Producer</span></div>
         </div>
         <div class="trophy-wrap">

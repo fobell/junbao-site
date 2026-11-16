@@ -66,6 +66,16 @@ for f in package.json package-lock.json index.html tsconfig.json vite.config.ts 
 done
 echo "kept as-is: .env .local data compose.yaml Dockerfile deploy/Caddyfile"
 
+# Large original decks live outside Git. Restore only files registered by this
+# release, after source cleanup and before Docker copies the build context.
+# Older commits may not contain the helper; this keeps rollback compatible.
+if [ -f "$APP/scripts/restore-resource-assets.py" ]; then
+  python3 "$APP/scripts/restore-resource-assets.py" \
+    --manifest "$APP/src/data/resources.json" \
+    --public-dir "$APP/public" \
+    --asset-dir "$APP/.local/resource-assets"
+fi
+
 say "4/5 settings for class / admin"
 OVR="$APP/compose.override.yaml"
 if [ ! -f "$OVR" ]; then
